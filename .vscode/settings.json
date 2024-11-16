@@ -1,0 +1,14 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/junit-4.13.2.jar",
+        "lib/hamcrest-core-1.3.jar"
+    ],
+    "java.test.config": {
+        "name": "JUnit",
+        "workingDirectory": "${workspaceFolder}",
+        "args": [
+            "-cp",
+            "bin:lib/junit-4.13.2.jar:lib/hamcrest-core-1.3.jar"
+        ]
+    }
+}
