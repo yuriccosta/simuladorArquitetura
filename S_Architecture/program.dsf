@@ -1,22 +1,3 @@
-a
-b
-c
-t
-ldi 1
-move %RPG0 %RPG1
-store a
-ldi 3
-store b
-ldi 4
-store c
-read b
-store t
-laco:
-read b
-add t
-store b
-read a
-inc
-store a
-sub c
-jn laco
+move 5 %REG0
+move 10 %REG1
+add %REG0 %REG1

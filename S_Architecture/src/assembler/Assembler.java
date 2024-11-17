@@ -144,10 +144,11 @@ public class Assembler {
 		String command = tokens[0];
 		String parameter ="";
 		String parameter2 = "";
+		String parameter3 = "";
 		int commandNumber = findCommandNumber(tokens);
-		if (commandNumber == 0) { //must to proccess an add command
+		if (commandNumber == 0) { //must to proccess an addRegReg command
 			parameter = tokens[1];
-			parameter = "&"+parameter; //this is a flag to indicate that is a position in memory
+			parameter2 = tokens[2]; 
 		}
 		if (commandNumber == 1) { //must to proccess an sub command
 			parameter = tokens[1];
@@ -183,12 +184,19 @@ public class Assembler {
 			parameter = tokens[1];
 			parameter2 = tokens[2];
 		}
+		if (commandNumber == 12) { //must to proccess an moveImmReg command
+			parameter = tokens[1];
+			parameter2 = tokens[2];
+		}
 		objProgram.add(Integer.toString(commandNumber));
 		if (!parameter.isEmpty()) {
 			objProgram.add(parameter);
 		}
 		if (!parameter2.isEmpty()) {
 			objProgram.add(parameter2);
+		}
+		if (!parameter3.isEmpty()) {
+			objProgram.add(parameter3);
 		}
 	}
 	
@@ -201,14 +209,27 @@ public class Assembler {
 	 * @param tokens
 	 * @return
 	 */
-	private int findCommandNumber(String[] tokens) {
-		int p = commands.indexOf(tokens[0]);
-		if (p<0){ //the command isn't in the list. So it must have multiple formats
-			if ("move".equals(tokens[0])) //the command is a move
-				p = proccessMove(tokens);
+		private int findCommandNumber(String[] tokens) {
+			int p = commands.indexOf(tokens[0]);
+			if (p < 0) { // the command isn't in the list. So it must have multiple formats
+				if ("move".equals(tokens[0])) { // the command is a move
+					p = proccessMove(tokens);
+				} else if ("add".equals(tokens[0])) {
+					p = proccessAdd(tokens);
+				}
+				/*
+				else if("imul".equals(tokens[0])) {
+					p = proccessImul(tokens);
+				} else if("sub".equals(tokens[0])) {
+					p = proccessSub(tokens);
+				} else if("inc".equals(tokens[0])) {
+					p = proccessInc(tokens);
+				}
+				*/
+			}
+			return p;
 		}
-		return p;
-	}
+	
 
 	/**
 	 * This method proccess a move command.
@@ -216,12 +237,47 @@ public class Assembler {
 	 * @param tokens
 	 * @return
 	 */
+	
 	private int proccessMove(String[] tokens) {
 		String p1 = tokens[1];
 		String p2 = tokens[2];
 		int p=-1;
 		if ((p1.startsWith("%"))&&(p2.startsWith("%"))) { //this is a moveRegReg comand
 			p = commands.indexOf("moveRegReg");
+		}else { 
+			if((p1.startsWith("&"))&& (p2.startsWith("%"))) { //this is a moveMemReg comand
+				p = commands.indexOf("moveMemReg");
+			}else {
+				if (p1.startsWith("%")) { //this is a moveRegMem comand
+					p2 = "&" + p2;
+					p = commands.indexOf("moveRegMem");
+				}else {
+					p2 = "&" + p2;
+					p = commands.indexOf("moveImmReg");
+				}
+			}
+		}
+		return p;
+	}
+
+	private int proccessAdd(String[] tokens) {
+		String p1 = tokens[1];
+		String p2 = tokens[2];
+		int p=-1;
+		if ((p1.startsWith("%"))&&(p2.startsWith("%"))) { //this is a addRegReg comand
+			p = commands.indexOf("addRegReg");
+		}else {
+			if (p2.startsWith("%")) { //this is a addMemReg comand
+				p1 = "&" + p1;
+				p = commands.indexOf("addMemReg");
+			}else {
+				if (p1.startsWith("%")) { //this is a addRegMem comand
+					p2 = "&" + p2;
+					p = commands.indexOf("addRegMem");
+				}else {
+					p = commands.indexOf("addImmMem");
+				}
+			}
 		}
 		return p;
 	}

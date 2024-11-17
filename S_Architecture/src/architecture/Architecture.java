@@ -23,13 +23,17 @@ public class Architecture {
 	private Bus extbus1;
 	private Bus intbus1;
 	private Bus intbus2;
+	private Bus flagsBus;
 	private Memory memory;
 	private Memory statusMemory;
 	private int memorySize;
 	private Register PC;
 	private Register IR;
-	private Register RPG;
-	private Register RPG1;
+	private Register REG0;
+	private Register REG1;
+	private Register REG2;
+	private Register REG3;
+	private Register REGID;
 	private Register Flags;
 	private Ula ula;
 	private Demux demux; //only for multiple register purposes
@@ -48,11 +52,14 @@ public class Architecture {
 		extbus1 = new Bus();
 		intbus1 = new Bus();
 		intbus2 = new Bus();
-		PC = new Register("PC", extbus1, intbus2);
-		IR = new Register("IR", extbus1, intbus2);
-		RPG = new Register("RPG0", extbus1, intbus1);
-		RPG1 = new Register ("RPG1", extbus1, intbus1);
-		Flags = new Register(2, intbus2);
+		PC = new Register("PC", extbus1, intbus1);
+		IR = new Register("IR", extbus1, intbus1);
+		REG0 = new Register("REG0", extbus1, intbus2);
+		REG1 = new Register ("REG1", extbus1, intbus2);
+		REG2 = new Register ("REG2", extbus1, intbus2);
+		REG3 = new Register ("REG3", extbus1, intbus2);
+		REGID = new Register("REGID", extbus1, extbus1);
+		Flags = new Register(2, flagsBus);
 		fillRegistersList();
 		ula = new Ula(intbus1, intbus2);
 		statusMemory = new Memory(2, extbus1);
@@ -70,8 +77,11 @@ public class Architecture {
 	 */
 	private void fillRegistersList() {
 		registersList = new ArrayList<Register>();
-		registersList.add(RPG);
-		registersList.add(RPG1);
+		registersList.add(REG0);
+		registersList.add(REG1);
+		registersList.add(REG2);
+		registersList.add(REG3);
+		registersList.add(REGID);
 		registersList.add(PC);
 		registersList.add(IR);
 		registersList.add(Flags);
@@ -123,8 +133,8 @@ public class Architecture {
 		return IR;
 	}
 
-	protected Register getRPG() {
-		return RPG;
+	protected Register getREG0() {
+		return REG0;
 	}
 
 	protected Register getFlags() {
@@ -162,16 +172,28 @@ public class Architecture {
 	 */
 	protected void fillCommandsList() {
 		commandsList = new ArrayList<String>();
-		commandsList.add("add");   //0
-		commandsList.add("sub");   //1
-		commandsList.add("jmp");   //2
-		commandsList.add("jz");    //3
-		commandsList.add("jn");    //4
-		commandsList.add("read");  //5
-		commandsList.add("store"); //6
-		commandsList.add("ldi");   //7
-		commandsList.add("inc");   //8		
-		commandsList.add("moveRegReg"); //9
+		commandsList.add("addRegReg"); //0
+		commandsList.add("addMemReg"); //1
+		commandsList.add("addRegMem"); //2
+		commandsList.add("subRegReg");   //3
+		commandsList.add("subMenReg");   //4
+		commandsList.add("subRegMen");   //5
+		commandsList.add("imulMenReg");   //6
+		commandsList.add("imulRegMen");   //7
+		commandsList.add("imulRegReg");   //8
+		commandsList.add("moveMenReg");   //9
+		commandsList.add("moveRegMen");   //10
+		commandsList.add("moveRegReg");   //11
+		commandsList.add("moveImmReg");   //12
+		commandsList.add("incReg");    //13
+		commandsList.add("incMen");    //14
+		commandsList.add("jmp");  //15
+		commandsList.add("jn"); //16
+		commandsList.add("jz");   //17
+		commandsList.add("jnz");   //18		
+		commandsList.add("jeq"); //19
+		commandsList.add("jgt"); //20
+		commandsList.add("jlw"); //21
 	}
 
 	
@@ -227,27 +249,31 @@ public class Architecture {
 	 * end
 	 * @param address
 	 */
-	public void add() {
+	public void addRegReg() { //Revisar
 		PC.internalRead();
 		ula.internalStore(1);
 		ula.inc();
 		ula.internalRead(1);
 		PC.internalStore(); //now PC points to the parameter address
-		RPG.internalRead();
-		ula.store(0); //the rpg value is in ULA (0). This is the first parameter
 		PC.read(); 
-		memory.read(); // the parameter is now in the external bus. 
-						//but the parameter is an address and we need the value
-		memory.read(); //now the value is in the external bus
-		RPG.store();
-		RPG.internalRead();
-		ula.store(1); //the rpg value is in ULA (0). This is the second parameter 
-		ula.add(); //the result is in the second ula's internal register
-		ula.internalRead(1);; //the operation result is in the internalbus 2
-		setStatusFlags(intbus2.get()); //changing flags due the end of the operation
-		RPG.internalStore(); //now the add is complete
-		PC.internalRead(); //we need to make PC points to the next instruction address
+		memory.read(); //the first register id is now in the external bus.
+		demux.setValue(extbus1.get()); //points to the correct register
+		registersInternalRead(); //starts the read from the register identified into demux bus
+		ula.internalStore(0);
+		ula.inc();
+		ula.internalRead(1);
+		PC.internalStore(); //now PC points to the second parameter (the second reg id)
+		PC.read(); 
+		memory.read(); //the first register id is now in the external bus.
+		demux.setValue(extbus1.get()); //points to the correct register
+		registersInternalRead(); //starts the read from the register identified into demux bus
 		ula.internalStore(1);
+		ula.add(); //the result is in the second ula's internal register
+		ula.internalRead(1);
+		setStatusFlags(intbus2.get()); //changing flags due the end of the operation
+		registersInternalStore(); //performs an internal store for the register identified into demux bus
+		PC.internalRead(); //we need to make PC points to the next instruction address
+		ula.store(1);
 		ula.inc();
 		ula.internalRead(1);
 		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status.
@@ -290,6 +316,7 @@ public class Architecture {
 	 * end
 	 * @param address
 	 */
+	/*
 	public void sub() {
 		PC.internalRead();
 		ula.internalStore(1);
@@ -315,7 +342,7 @@ public class Architecture {
 		ula.internalRead(1);
 		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status.
 	}
-	
+	 */
 	/**
 	 * This method implements the microprogram for
 	 * 					JMP address
@@ -472,6 +499,7 @@ public class Architecture {
 	 * end
 	 * @param address
 	 */
+	/*
 	public void read() {
 		PC.internalRead();
 		ula.internalStore(1);
@@ -488,7 +516,7 @@ public class Architecture {
 		ula.internalRead(1);
 		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status.
 	}
-	
+	 */
 	/**
 	 * This method implements the microprogram for
 	 * 					store address
@@ -517,6 +545,7 @@ public class Architecture {
 	 * end
 	 * @param address
 	 */
+	/*
 	public void store() {
 		PC.internalRead();
 		ula.internalStore(1);
@@ -535,6 +564,7 @@ public class Architecture {
 		ula.internalRead(1);
 		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status.
 	}
+		 */
 	
 	/**
 	 * This method implements the microprogram for
@@ -561,6 +591,7 @@ public class Architecture {
 	 * end
 	 * @param address
 	 */
+	/*
 	public void ldi() {
 		PC.internalRead();
 		ula.internalStore(1);
@@ -576,7 +607,7 @@ public class Architecture {
 		ula.internalRead(1);
 		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status.
 	}
-	
+	 */
 	/**
 	 * This method implements the microprogram for
 	 * 					inc 
@@ -605,6 +636,7 @@ public class Architecture {
 	 * end
 	 * @param address
 	 */
+	/*
 	public void inc() {
 		RPG.internalRead();
 		ula.store(1);
@@ -618,7 +650,7 @@ public class Architecture {
 		ula.internalRead(1);
 		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status.
 	}
-	
+	 */
 	/**
 	 * This method implements the microprogram for
 	 * 					move <reg1> <reg2> 
@@ -651,8 +683,8 @@ public class Architecture {
 	 * 22. ula -> intbus2 //ula.read()
 	 * 23. pc <- intbus2 //pc.store()  
 	 * 		  
-	 */
-	public void moveRegReg() {
+	 *//* */
+	public void moveImmReg() {
 		PC.internalRead();
 		ula.internalStore(1);
 		ula.inc();
@@ -660,22 +692,32 @@ public class Architecture {
 		PC.internalStore(); //now PC points to the first parameter (the first reg id)
 		PC.read(); 
 		memory.read(); // the first register id is now in the external bus.
+		PC.store();
 		PC.internalRead();
-		ula.internalStore(1);
+		IR.internalStore();
 		ula.inc();
 		ula.internalRead(1);
-		PC.internalStore(); //now PC points to the second parameter (the second reg id)
-		demux.setValue(extbus1.get()); //points to the correct register
-		registersInternalRead(); //starts the read from the register identified into demux bus
+		PC.internalStore();
 		PC.read();
-		memory.read(); // the second register id is now in the external bus.
-		demux.setValue(extbus1.get());//points to the correct register
-		registersInternalStore(); //performs an internal store for the register identified into demux bus
-		PC.internalRead(); //we need to make PC points to the next instruction address
-		ula.internalStore(1);
+		memory.read();
+		demux.setValue(extbus1.get());
+		IR.internalRead();
+		PC.internalStore();
+		PC.read();
+		registersStore();
 		ula.inc();
 		ula.internalRead(1);
-		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status.
+		PC.internalStore();
+		/*
+		REGID.store();
+		IR.internalRead();
+		PC.internalStore();
+		PC.read();
+		demux.setValue(REGID.getData());
+		registersStore();
+		ula.inc();
+		ula.internalRead(1);
+		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status. */
 	}
 	
 	
@@ -760,39 +802,80 @@ public class Architecture {
 	 */
 	private void decodeExecute() {
 		IR.internalRead(); //the instruction is in the internalbus2
-		int command = intbus2.get();
+		int command = extbus1.get();
 		simulationDecodeExecuteBefore(command);
 		switch (command) {
+		
 		case 0:
-			add();
+			addRegReg();
 			break;
+		/*
 		case 1:
-			sub();
+			addMemReg();
 			break;
 		case 2:
-			jmp();
+			addRegMem();
 			break;
 		case 3:
-			jz();
+			subRegReg();
 			break;
 		case 4:
-			jn();
+			subMenReg();
 			break;
 		case 5:
-			read();
+			subRegMen();
 			break;
 		case 6:
-			store();
+			imulMenReg();
 			break;
 		case 7:
-			ldi();
+			imulRegMen();
 			break;
 		case 8:
-			inc();
+			imulRegReg();
 			break;
 		case 9:
+			moveMenReg();
+			break;
+		case 10:
+			moveRegMen();
+			break;
+		case 11:
 			moveRegReg();
 			break;
+		 */
+		case 12:
+			moveImmReg();
+			break;
+		/*
+		case 13:
+			incReg();
+			break;
+		case 14:
+			incMen();
+			break;
+		case 15:
+			jmp();
+			break;
+		case 16:
+			jn();
+			break;
+		case 17:
+			jz();
+			break;
+		case 18:
+			jnz();
+			break;
+		case 19:
+			jeq();
+			break;
+		case 20:
+			jgt();
+			break;
+		case 21:
+			jlw();
+			break;
+		 */
 		default:
 			halt = true;
 			break;
@@ -855,7 +938,9 @@ public class Architecture {
 	private void fetch() {
 		PC.read();
 		memory.read();
-		IR.store();
+		PC.store();
+		PC.internalRead();
+		IR.internalStore();
 		simulationFetch();
 	}
 
