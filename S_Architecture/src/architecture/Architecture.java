@@ -30,6 +30,8 @@ public class Architecture {
 	private Register IR;
 	private Register RPG;
 	private Register RPG1;
+	private Register RPG2;
+	private Register RPG3;
 	private Register Flags;
 	private Ula ula;
 	private Demux demux; //only for multiple register purposes
@@ -48,11 +50,13 @@ public class Architecture {
 		extbus1 = new Bus();
 		intbus1 = new Bus();
 		intbus2 = new Bus();
-		PC = new Register("PC", extbus1, intbus2);
-		IR = new Register("IR", extbus1, intbus2);
-		RPG = new Register("RPG0", extbus1, intbus1);
-		RPG1 = new Register ("RPG1", extbus1, intbus1);
-		Flags = new Register(2, intbus2);
+		PC = new Register("PC", extbus1, intbus1);
+		IR = new Register("IR", extbus1, intbus1);
+		RPG = new Register("RPG0", extbus1, intbus2);
+		RPG1 = new Register("RPG1", extbus1, intbus2);
+		RPG2 = new Register("RPG2", extbus1, intbus2);
+		RPG3 = new Register("RPG3", extbus1, intbus2);
+		Flags = new Register(2, extbus1);
 		fillRegistersList();
 		ula = new Ula(intbus1, intbus2);
 		statusMemory = new Memory(2, extbus1);
@@ -72,6 +76,8 @@ public class Architecture {
 		registersList = new ArrayList<Register>();
 		registersList.add(RPG);
 		registersList.add(RPG1);
+		registersList.add(RPG2);
+		registersList.add(RPG3);
 		registersList.add(PC);
 		registersList.add(IR);
 		registersList.add(Flags);
@@ -125,6 +131,18 @@ public class Architecture {
 
 	protected Register getRPG() {
 		return RPG;
+	}
+
+	protected Register getRPG1() {
+		return RPG1;
+	}
+
+	protected Register getRPG2() {
+		return RPG2;
+	}
+
+	protected Register getRPG3() {
+		return RPG3;
 	}
 
 	protected Register getFlags() {
