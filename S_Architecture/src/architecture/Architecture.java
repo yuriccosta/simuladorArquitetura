@@ -175,22 +175,22 @@ public class Architecture {
 		commandsList.add("addRegReg"); //0
 		commandsList.add("addMemReg"); //1
 		commandsList.add("addRegMem"); //2
-		commandsList.add("subRegReg");   //3
-		commandsList.add("subMenReg");   //4
-		commandsList.add("subRegMen");   //5
-		commandsList.add("imulMenReg");   //6
-		commandsList.add("imulRegMen");   //7
-		commandsList.add("imulRegReg");   //8
-		commandsList.add("moveMenReg");   //9
-		commandsList.add("moveRegMen");   //10
-		commandsList.add("moveRegReg");   //11
-		commandsList.add("moveImmReg");   //12
-		commandsList.add("incReg");    //13
-		commandsList.add("incMen");    //14
-		commandsList.add("jmp");  //15
+		commandsList.add("subRegReg"); //3
+		commandsList.add("subMenReg"); //4
+		commandsList.add("subRegMen"); //5
+		commandsList.add("imulMenReg"); //6
+		commandsList.add("imulRegMen"); //7
+		commandsList.add("imulRegReg"); //8
+		commandsList.add("moveMenReg"); //9
+		commandsList.add("moveRegMen"); //10
+		commandsList.add("moveRegReg"); //11
+		commandsList.add("moveImmReg"); //12
+		commandsList.add("incReg"); //13
+		commandsList.add("incMen"); //14
+		commandsList.add("jmp"); //15
 		commandsList.add("jn"); //16
-		commandsList.add("jz");   //17
-		commandsList.add("jnz");   //18		
+		commandsList.add("jz"); //17
+		commandsList.add("jnz"); //18		
 		commandsList.add("jeq"); //19
 		commandsList.add("jgt"); //20
 		commandsList.add("jlw"); //21
@@ -809,7 +809,7 @@ public class Architecture {
 		case 0:
 			addRegReg();
 			break;
-		/*
+		
 		case 1:
 			addMemReg();
 			break;
@@ -843,11 +843,10 @@ public class Architecture {
 		case 11:
 			moveRegReg();
 			break;
-		 */
+		 
 		case 12:
 			moveImmReg();
 			break;
-		/*
 		case 13:
 			incReg();
 			break;
@@ -875,7 +874,6 @@ public class Architecture {
 		case 21:
 			jlw();
 			break;
-		 */
 		default:
 			halt = true;
 			break;

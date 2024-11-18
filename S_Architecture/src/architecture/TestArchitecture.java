@@ -572,16 +572,29 @@ public class TestArchitecture {
 		
 		Architecture arch = new Architecture();
 		ArrayList<String> commands = arch.getCommandsList();
-		assertTrue("add".equals(commands.get(0)));
-		assertTrue("sub".equals(commands.get(1)));
-		assertTrue("jmp".equals(commands.get(2)));
-		assertTrue("jz".equals(commands.get(3)));
-		assertTrue("jn".equals(commands.get(4)));
-		assertTrue("read".equals(commands.get(5)));
-		assertTrue("store".equals(commands.get(6)));
-		assertTrue("ldi".equals(commands.get(7)));
-		assertTrue("inc".equals(commands.get(8)));
-		assertTrue("moveRegReg".equals(commands.get(9)));
+		assertTrue("addRegReg".equals(commands.get(0)));
+        assertTrue("addMemReg".equals(commands.get(1)));
+        assertTrue("addRegMem".equals(commands.get(2)));
+        assertTrue("subRegReg".equals(commands.get(3)));
+        assertTrue("subMenReg".equals(commands.get(4)));
+        assertTrue("subRegMen".equals(commands.get(5)));
+        assertTrue("imulMenReg".equals(commands.get(6)));
+        assertTrue("imulRegMen".equals(commands.get(7)));
+        assertTrue("imulRegReg".equals(commands.get(8)));
+        assertTrue("moveMenReg".equals(commands.get(9)));
+        assertTrue("moveRegMen".equals(commands.get(10)));
+        assertTrue("moveRegReg".equals(commands.get(11)));
+        assertTrue("moveImmReg".equals(commands.get(12)));
+        assertTrue("incReg".equals(commands.get(13)));
+        assertTrue("incMen".equals(commands.get(14)));
+        assertTrue("jmp".equals(commands.get(15)));
+        assertTrue("jn".equals(commands.get(16)));
+        assertTrue("jz".equals(commands.get(17)));
+        assertTrue("jnz".equals(commands.get(18)));
+        assertTrue("jeq".equals(commands.get(19)));
+        assertTrue("jgt".equals(commands.get(20)));
+        assertTrue("jlw".equals(commands.get(21)));
+		
 	}
 	
 	@Test
