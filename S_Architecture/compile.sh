@@ -14,7 +14,7 @@ javac -d bin -sourcepath src -cp lib/junit-4.13.2.jar:lib/hamcrest-core-1.3.jar 
 
 # Roda o arquivo principal compilado em bin/architecture/Architecture.class
 # Se quiser rodar outro arquivo só mudar o nome do arquivo e pra rodar o de teste utilizar a extensão do vscode
-java -cp bin architecture.Architecture
+#java -cp bin architecture.Architecture
 
 # Se não funcionar testar:
 # java -cp bin:lib/junit-4.13.2.jar:lib/hamcrest-core-1.3.jar architecture.Architecture
