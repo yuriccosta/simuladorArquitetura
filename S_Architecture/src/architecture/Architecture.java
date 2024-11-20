@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.print.DocFlavor.READER;
+import javax.print.DocFlavor.READER;
 
 import components.Bus;
 import components.Demux;
@@ -199,7 +200,7 @@ public class Architecture {
 		commandsList.add("subMemReg");   //4
 		commandsList.add("subRegMem");   //5
 		commandsList.add("imulMemReg");   //6
-		commandsList.add("imulRegMen");   //7
+		commandsList.add("imulRegMem");   //7
 		commandsList.add("imulRegReg");   //8
 		commandsList.add("moveMemReg");   //9
 		commandsList.add("moveRegMem");   //10
