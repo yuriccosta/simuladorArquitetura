@@ -1,4 +1,9 @@
-move 5 %REG0
-a
-move %REG0 a
-add a %REG0
+move -10 %REG0
+move 1 %REG1
+teste:
+add %REG0 %REG1
+move %REG1 %REG0
+move 1 %REG1
+jz fim
+jmp teste
+fim:

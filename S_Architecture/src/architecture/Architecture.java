@@ -871,7 +871,7 @@ public class Architecture {
 		demux.setValue(extbus1.get());
 		ula.inc();
 		ula.read(1);
-		PC.internalRead();
+		PC.internalStore();
 		PC.read();
 		memory.read();
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
@@ -941,7 +941,7 @@ public class Architecture {
 		demux.setValue(extbus1.get());
 		ula.inc();
 		ula.read(1);
-		PC.internalRead();
+		PC.internalStore();
 		PC.read();
 		memory.read();
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
@@ -953,7 +953,7 @@ public class Architecture {
 		registersInternalRead();
 		ula.internalStore(0);
 		IR.internalRead();
-		ula.read(1);
+		ula.store(1);
 		ula.sub();
 		ula.internalRead(1);
 		setStatusFlags(intbus2.get()); //changing flags due the end of the operation
@@ -1011,7 +1011,8 @@ public class Architecture {
 		demux.setValue(extbus1.get());
 		ula.inc();
 		ula.read(1);
-		PC.internalRead();
+		System.out.println("ULA(1) -> IntBus1: " + intbus1.get());
+		PC.internalStore();
 		PC.read();
 		memory.read();
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
