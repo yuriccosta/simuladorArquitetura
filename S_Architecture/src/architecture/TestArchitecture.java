@@ -390,38 +390,37 @@ public class TestArchitecture {
 	@Test
 	public void testmoveMemReg() {
 		Architecture arch = new Architecture();
-		//in this test, PC will point to 10
+		//in this test, PC will point to 33
 		arch.getExtbus1().put(33);
-		arch.getPC().store();      //PC points to position 10
+		arch.getPC().store();      //PC points to position 33
 		
-		// Precisamos que tenha um endereço na memória logo após o add
+		// Precisamos que tenha um endereço na memória 
 		arch.getExtbus1().put(34);
 		arch.getMemory().store();
 		arch.getExtbus1().put(77);
 		arch.getMemory().store();
 
-		// Precisamos que mem[127] tenha um valor
+		// Precisamos que mem[77] tenha um valor
 		arch.getExtbus1().put(77);
 		arch.getMemory().store();
 		arch.getExtbus1().put(17);
 		arch.getMemory().store();
 
+		// Agora precisamos do id do registrador
+		// Registrador 0 na posição 22
 		arch.getExtbus1().put(35);
 		arch.getMemory().store();
 		arch.getExtbus1().put(0);
 		arch.getMemory().store();
-
-		// Agora precisamos que logo após o mem[21] tenhamos o id do registrador
-		// Registrador 0 na posição 22
 
 		//result must be into reg[0]
 		//pc must be three positions ahead the original one
 		arch.moveMemReg();
 		arch.getREG0().read();
 
-		//the bus must contains the number 10
+		//the bus must contains the number 17
 		assertEquals(17, arch.getExtbus1().get());
-		//PC must be pointing to 22
+		//PC must be pointing to 36
 		arch.getPC().read();
 		assertEquals(36, arch.getExtbus1().get());
 	}
