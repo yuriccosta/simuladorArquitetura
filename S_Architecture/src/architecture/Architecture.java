@@ -18,8 +18,6 @@ public class Architecture {
 	
 	private boolean simulation; //this boolean indicates if the execution is done in simulation mode.
 								//simulation mode shows the components' status after each instruction
-	
-	
 	private boolean halt;
 	private Bus extbus1;
 	private Bus intbus1;

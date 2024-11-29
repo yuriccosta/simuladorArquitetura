@@ -125,7 +125,8 @@ public class TestArchitecture {
 		// Registrador 0 na posição 22
 		arch.getExtbus1().put(22);
 		arch.getMemory().store();
-
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
 
 		//result must be into reg[0]
 		//pc must be three positions ahead the original one
@@ -173,7 +174,7 @@ public class TestArchitecture {
 		arch.getMemory().store();
 
 
-		//result must be into mem[11]
+		//result must be into mem[111]
 		//pc must be three positions ahead the original one
 		arch.addRegMem();
 		arch.getExtbus1().put(111);
@@ -268,7 +269,7 @@ public class TestArchitecture {
 		//the flags bits 0 and 1 must be 0
 		assertEquals(0, arch.getFlags().getBit(0));
 		assertEquals(0, arch.getFlags().getBit(1));
-		//PC must be pointing to 13
+		//PC must be pointing to 23
 		arch.getPC().read();
 		assertEquals(23, arch.getExtbus1().get());
 	}
@@ -310,14 +311,227 @@ public class TestArchitecture {
 		arch.getExtbus1().put(111);
 		arch.getMemory().read();
 		
-		//the bus must contains the number 20
+		//the bus must contains the number 4
 		assertEquals(4, arch.getExtbus1().get());
 		//the flags bits 0 and 1 must be 0
 		assertEquals(0, arch.getFlags().getBit(0));
 		assertEquals(0, arch.getFlags().getBit(1));
-		//PC must be pointing to 13
+		//PC must be pointing to 43
 		arch.getPC().read();
 		assertEquals(43, arch.getExtbus1().get());
+	}
+
+	@Test
+	public void testIncReg() {
+		Architecture arch = new Architecture();
+		//in this test, PC will point to 15
+		arch.getExtbus1().put(15);
+		arch.getPC().store();      //PC points to position 15
+
+		// Precisamos que reg0 tenha um valor 
+		arch.getExtbus1().put(20);
+		arch.getREG0().store();
+
+		// Agora precisamos que logo após o comando inc tenhamos o id do registrador
+		// Registrador 0 na posição 16
+		arch.getExtbus1().put(16);
+		arch.getMemory().store();
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
+
+		//result must be into reg0
+		//pc must be three positions ahead the original one
+		arch.incReg();
+		arch.getREG0().read();
+		//the bus must contains the number 21
+		assertEquals(21, arch.getExtbus1().get());
+		//the flags bits 0 and 1 must be 0
+		assertEquals(0, arch.getFlags().getBit(0));
+		assertEquals(0, arch.getFlags().getBit(1));
+		//PC must be pointing to 17
+		arch.getPC().read();
+		assertEquals(17, arch.getExtbus1().get());
+	}
+
+	@Test
+	public void testIncMem() {
+		Architecture arch = new Architecture();
+		//in this test, PC will point to 30
+		arch.getExtbus1().put(30);
+		arch.getPC().store();      //PC points to position 30
+
+		// Precisamos que tenha um endereço na memória logo após o inc
+		arch.getExtbus1().put(31);
+		arch.getMemory().store();
+		arch.getExtbus1().put(55);
+		arch.getMemory().store();
+
+		// Precisamos que mem[55] tenha um valor
+		arch.getExtbus1().put(55);
+		arch.getMemory().store();
+		arch.getExtbus1().put(11);
+		arch.getMemory().store();
+
+		//result must be into memory[55]
+		//pc must be three positions ahead the original one
+		arch.incMem();
+		arch.getExtbus1().put(55);
+		arch.getMemory().read();
+		//the bus must contains the number 12
+		assertEquals(12, arch.getExtbus1().get());
+		//the flags bits 0 and 1 must be 0
+		assertEquals(0, arch.getFlags().getBit(0));
+		assertEquals(0, arch.getFlags().getBit(1));
+		//PC must be pointing to 32
+		arch.getPC().read();
+		assertEquals(32, arch.getExtbus1().get());
+	}
+
+	@Test
+	public void testmoveMemReg() {
+		Architecture arch = new Architecture();
+		//in this test, PC will point to 10
+		arch.getExtbus1().put(33);
+		arch.getPC().store();      //PC points to position 10
+		
+		// Precisamos que tenha um endereço na memória logo após o add
+		arch.getExtbus1().put(34);
+		arch.getMemory().store();
+		arch.getExtbus1().put(77);
+		arch.getMemory().store();
+
+		// Precisamos que mem[127] tenha um valor
+		arch.getExtbus1().put(77);
+		arch.getMemory().store();
+		arch.getExtbus1().put(17);
+		arch.getMemory().store();
+
+		arch.getExtbus1().put(35);
+		arch.getMemory().store();
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
+
+		// Agora precisamos que logo após o mem[21] tenhamos o id do registrador
+		// Registrador 0 na posição 22
+
+		//result must be into reg[0]
+		//pc must be three positions ahead the original one
+		arch.moveMemReg();
+		arch.getREG0().read();
+
+		//the bus must contains the number 10
+		assertEquals(17, arch.getExtbus1().get());
+		//PC must be pointing to 22
+		arch.getPC().read();
+		assertEquals(36, arch.getExtbus1().get());
+	}
+
+
+	@Test
+	public void testmoveRegMem() {
+		Architecture arch = new Architecture();
+		//in this test, PC will point to 27
+		arch.getExtbus1().put(27);
+		arch.getPC().store();      //PC points to position 27
+		
+		// Precisamos que reg0 tenha um valor
+		arch.getExtbus1().put(7);
+		arch.getREG0().store();
+
+		// Agora precisamos que logo após o comando move tenhamos o id do registrador
+		// Registador 0 na posição 41
+		arch.getExtbus1().put(28);
+		arch.getMemory().store();
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
+		
+		//Agora precisamos que tenha um endereço na memória logo após o que guardava o id do registrador
+		arch.getExtbus1().put(29);
+		arch.getMemory().store();
+		arch.getExtbus1().put(66);
+		arch.getMemory().store();
+
+		//result must be into mem[111]
+		//pc must be three positions ahead the original one
+		arch.moveRegMem();
+		arch.getExtbus1().put(66);
+		arch.getMemory().read();
+
+		//the bus must contains the number 10
+		assertEquals(7, arch.getExtbus1().get());
+		//PC must be pointing to 22
+		arch.getPC().read();
+		assertEquals(30, arch.getExtbus1().get());
+	}
+
+	@Test
+	public void testmoveRegReg() {
+		Architecture arch = new Architecture();
+		//in this test, PC will point to 19
+		arch.getExtbus1().put(19);
+		arch.getPC().store();      //PC points to position 19
+
+		// Precisamos que reg0 tenha um valor
+		arch.getExtbus1().put(10);
+		arch.getREG0().store();
+
+		// Agora precisamos que logo após o comando move tenhamos os ids dos registradores
+		// Registrador 0 na posição 20
+		arch.getExtbus1().put(20);
+		arch.getMemory().store();
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
+
+		// Registrador 1 na posição 21
+		arch.getExtbus1().put(21);
+		arch.getMemory().store();
+		arch.getExtbus1().put(1);
+		arch.getMemory().store();
+
+		//result must be into reg1
+		//pc must be three positions ahead the original one
+		arch.moveRegReg();
+		arch.getREG1().read();
+		//the bus must contains the number 10
+		assertEquals(10, arch.getExtbus1().get());
+		//PC must be pointing to 22
+		arch.getPC().read();
+		assertEquals(22, arch.getExtbus1().get());
+	}
+
+	@Test
+	public void testImmRegReg() {
+		Architecture arch = new Architecture();
+		//in this test, PC will point to 19
+		arch.getExtbus1().put(19);
+		arch.getPC().store();      //PC points to position 19
+
+		// Precisamos que reg0 tenha um valor
+		arch.getExtbus1().put(10);
+		arch.getREG0().store();
+
+		// Agora precisamos que logo após o comando move tenhamos os ids dos registradores
+		// Registrador 0 na posição 20
+		arch.getExtbus1().put(20);
+		arch.getMemory().store();
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
+
+		// Registrador 1 na posição 21
+		arch.getExtbus1().put(21);
+		arch.getMemory().store();
+		arch.getExtbus1().put(1);
+		arch.getMemory().store();
+
+		//result must be into reg1
+		//pc must be three positions ahead the original one
+		arch.moveRegReg();
+		arch.getREG1().read();
+		//the bus must contains the number 10
+		assertEquals(10, arch.getExtbus1().get());
+		//PC must be pointing to 22
+		arch.getPC().read();
+		assertEquals(22, arch.getExtbus1().get());
 	}
 	
 	// @Test
@@ -772,7 +986,6 @@ public class TestArchitecture {
 	// 	arch.getPC().read();assertEquals(33, arch.getExtbus1().get());
 	// }
 		
-	
 	@Test
 	public void testFillCommandsList() {
 		
