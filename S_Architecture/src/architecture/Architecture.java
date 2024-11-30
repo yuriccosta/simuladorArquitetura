@@ -892,7 +892,7 @@ public class Architecture {
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
 		ula.internalStore(1);
 		ula.sub();
-		extbus1.put(Flags.getBit(1)); //the ZERO bit is in the external bus 
+		extbus1.put(Flags.getBit(0)); //the ZERO bit is in the external bus 
 		statusMemory.read(); //gets the correct address (next instruction or parameter address)
 		PC.store();
 	}
