@@ -870,7 +870,7 @@ public class Architecture {
 		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
-		memory.read();// now the parameter value (address of the jz) is in the external bus
+		memory.read();// now the parameter value (address of the jeq) is in the external bus
 		demux.setValue(extbus1.get());
 		registersInternalRead();
 		ula.internalStore(0);
@@ -891,7 +891,8 @@ public class Architecture {
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
-		extbus1.put(Flags.getBit(1)); //the ZERO bit is in the external bus 
+		ula.sub();
+		//extbus1.put(Flags.getBit(1)); //the ZERO bit is in the external bus 
 		statusMemory.read(); //gets the correct address (next instruction or parameter address)
 		PC.store();
 	}
