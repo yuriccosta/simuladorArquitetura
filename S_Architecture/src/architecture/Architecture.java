@@ -295,7 +295,7 @@ public class Architecture {
 		PC.internalRead(); //we need to make PC points to the next instruction address
 		ula.store(1);
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status.
 	}
 
@@ -433,7 +433,7 @@ public class Architecture {
 		IR.internalRead();
 		ula.store(1);
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore(); //now PC points to the next instruction. We go back to the FETCH status.
 	}
 
@@ -665,9 +665,9 @@ public class Architecture {
 	 */
 	public void jmp() {
 		PC.internalRead();
-		ula.internalStore(1);
+		ula.store(1);
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore(); //now PC points to the parameter address
 		PC.read();
 		memory.read();
@@ -706,15 +706,15 @@ public class Architecture {
 	 */
 	public void jz() {
 		PC.internalRead();
-		ula.internalStore(1);
+		ula.store(1);
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
@@ -755,15 +755,15 @@ public class Architecture {
 	 */
 	public void jnz() {
 		PC.internalRead();
-		ula.internalStore(1);
+		ula.store(1);
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
@@ -804,15 +804,15 @@ public class Architecture {
 	 */
 	public void jn() {
 		PC.internalRead();
-		ula.internalStore(1);
+		ula.store(1);
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
@@ -853,15 +853,15 @@ public class Architecture {
 	 */
 	public void jeq() {
 		PC.internalRead();
-		ula.internalStore(1);
+		ula.store(1);
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
@@ -902,15 +902,15 @@ public class Architecture {
 	 */
 	public void jgt() {
 		PC.internalRead();
-		ula.internalStore(1);
+		ula.store(1);
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
@@ -951,15 +951,15 @@ public class Architecture {
 	 */
 	public void jlw() {
 		PC.internalRead();
-		ula.internalStore(1);
+		ula.store(1);
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
-		ula.internalRead(1);
+		ula.read(1);
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
