@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.print.DocFlavor.READER;
+import javax.print.DocFlavor.READER;
 
 import components.Bus;
 import components.Demux;
@@ -666,7 +667,9 @@ public class Architecture {
 	public void jmp() {
 		PC.internalRead();
 		ula.store(1);
+		ula.store(1);
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore(); //now PC points to the parameter address
 		PC.read();
@@ -707,13 +710,16 @@ public class Architecture {
 	public void jz() {
 		PC.internalRead();
 		ula.store(1);
+		ula.store(1);
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
@@ -756,17 +762,20 @@ public class Architecture {
 	public void jnz() {
 		PC.internalRead();
 		ula.store(1);
+		ula.store(1);
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
-		statusMemory.storeIn1(); //the address is in position 1 of the status memory
+		statusMemory.storeIn0(); //the address is in position 1 of the status memory
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
-		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
+		statusMemory.storeIn1(); //the address is in the position 0 of the status memory
 		extbus1.put(Flags.getBit(0)); //the ZERO bit is in the external bus 
 		statusMemory.read(); //gets the correct address (next instruction or parameter address)
 		PC.store(); //stores into PC
@@ -805,13 +814,16 @@ public class Architecture {
 	public void jn() {
 		PC.internalRead();
 		ula.store(1);
+		ula.store(1);
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore();//now PC points to the next instruction
 		PC.read();//now the bus has the next istruction address
@@ -854,11 +866,27 @@ public class Architecture {
 	public void jeq() {
 		PC.internalRead();
 		ula.store(1);
+		ula.store(1);
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
+		demux.setValue(extbus1.get());
+		registersInternalRead();
+		ula.internalStore(0);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore();
+		PC.read();
+		memory.read();
+		demux.setValue(extbus1.get());
+		ula.inc();
+		ula.read(1);
+		PC.internalStore();
+		PC.read();
+		memory.read();
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
 		ula.read(1);
@@ -867,7 +895,7 @@ public class Architecture {
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
 		extbus1.put(Flags.getBit(1)); //the ZERO bit is in the external bus 
 		statusMemory.read(); //gets the correct address (next instruction or parameter address)
-		PC.store(); //stores into PC
+		PC.store();
 	}
 
 			/**
@@ -903,11 +931,29 @@ public class Architecture {
 	public void jgt() {
 		PC.internalRead();
 		ula.store(1);
+		ula.store(1);
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
+		demux.setValue(extbus1.get());
+		registersRead();
+		PC.store();
+		PC.internalRead();
+		IR.internalStore();
+		ula.inc();
+		ula.read(1);
+		PC.internalStore();
+		PC.read();
+		memory.read();
+		demux.setValue(extbus1.get());
+		ula.inc();
+		ula.read(1);
+		PC.internalStore();
+		PC.read();
+		memory.read();
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
 		ula.read(1);
@@ -916,7 +962,7 @@ public class Architecture {
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
 		extbus1.put(Flags.getBit(1)); //the ZERO bit is in the external bus 
 		statusMemory.read(); //gets the correct address (next instruction or parameter address)
-		PC.store(); //stores into PC
+		PC.store();
 	}
 
 				/**
@@ -952,11 +998,28 @@ public class Architecture {
 	public void jlw() {
 		PC.internalRead();
 		ula.store(1);
+		ula.store(1);
 		ula.inc();
+		ula.read(1);
 		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
 		memory.read();// now the parameter value (address of the jz) is in the external bus
+		demux.setValue(extbus1.get());
+		registersInternalRead();
+		ula.internalStore(0);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore();
+		PC.read();
+		memory.read();
+		demux.setValue(extbus1.get());
+		ula.inc();
+		ula.read(1);
+		System.out.println("ULA(1) -> IntBus1: " + intbus1.get());
+		PC.internalStore();
+		PC.read();
+		memory.read();
 		statusMemory.storeIn1(); //the address is in position 1 of the status memory
 		ula.inc();
 		ula.read(1);
@@ -965,7 +1028,7 @@ public class Architecture {
 		statusMemory.storeIn0(); //the address is in the position 0 of the status memory
 		extbus1.put(Flags.getBit(1)); //the ZERO bit is in the external bus 
 		statusMemory.read(); //gets the correct address (next instruction or parameter address)
-		PC.store(); //stores into PC
+		PC.store();
 	}
 	
 	/**

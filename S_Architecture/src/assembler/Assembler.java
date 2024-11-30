@@ -205,9 +205,40 @@ public class Assembler {
 		if (commandNumber == 14) { //incMem
 			parameter = "&"+tokens[1];
 		}
-
-		//Continuar
-
+		if (commandNumber == 15) { //must to proccess an jmp command
+			parameter = tokens[1];
+			parameter = "&"+parameter;//this is a flag to indicate that is a position in memory
+		}
+		if (commandNumber == 16) { //must to proccess an jn command
+			parameter = tokens[1];
+			parameter = "&"+parameter;//this is a flag to indicate that is a position in memory
+		}
+		if (commandNumber == 17) { //must to proccess an jz command
+			parameter = tokens[1];
+			parameter = "&"+parameter;//this is a flag to indicate that is a position in memory
+		}
+		if (commandNumber == 18) { //must to proccess an jnz command
+			parameter = tokens[1];
+			parameter = "&"+parameter;//this is a flag to indicate that is a position in memory
+		}
+		if (commandNumber == 19) { //must to proccess an jeq command
+			parameter = tokens[1];
+			parameter2 = tokens[2];
+			parameter3 = tokens[3];
+			parameter3 = "&" + parameter3;
+		}
+		if (commandNumber == 20) { //must to proccess an jgt command
+			parameter = tokens[1];
+			parameter2 = tokens[2];
+			parameter3 = tokens[3];
+			parameter3 = "&" + parameter3;
+		}
+		if (commandNumber == 21) { //must to proccess an jlw command
+			parameter = tokens[1];
+			parameter2 = tokens[2];
+			parameter3 = tokens[3];
+			parameter3 = "&" + parameter3;
+		}
 		objProgram.add(Integer.toString(commandNumber));
 		if (!parameter.isEmpty()) {
 			objProgram.add(parameter);
