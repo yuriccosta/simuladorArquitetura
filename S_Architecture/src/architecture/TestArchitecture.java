@@ -322,6 +322,24 @@ public class TestArchitecture {
 	}
 
 	@Test
+	public void jmp(){
+		Architecture arch = new Architecture();
+		arch.getExtbus1().put(50);
+		arch.getPC().store();      //PC aponta para posição 50
+
+		// Precisamos que mem[51] tenha um valor
+		arch.getExtbus1().put(51);
+		arch.getMemory().store();
+		arch.getExtbus1().put(105);
+		arch.getMemory().store();
+
+		// Agora basta chamar o método jmp
+		arch.jmp();
+		arch.getPC().read();
+		assertEquals(105, arch.getExtbus1().get());
+	}
+	
+	@Test
 	public void testIncReg() {
 		Architecture arch = new Architecture();
 		//in this test, PC will point to 15

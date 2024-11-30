@@ -1,16 +1,9 @@
-move 20 %REG0
-move 5 %REG1
+move -10 %REG0
+move 1 %REG1
+teste:
 add %REG0 %REG1
-sub %REG1 %REG0
-a
-move %REG0 a
-inc a
-move a %REG0
-inc %REG0
-add a %REG1
-move a %REG2
-add %REG1 a
-move a %REG2
-sub %REG2 a
-move a %REG3
-sub a %REG2
+move %REG1 %REG0
+move 1 %REG1
+jz fim
+jmp teste
+fim:
