@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import components.Memory;
+import components.Register;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class TestArchitecture {
 	
@@ -250,7 +252,7 @@ public class TestArchitecture {
 		arch.getMemory().store();
 
 		// Precisamos que reg0 tenha um valor
-		arch.getExtbus1().put(17);
+		arch.getExtbus1().put(37);
 		arch.getREG0().store();
 
 		// Agora precisamos que logo após o mem[21] tenhamos o id do registrador
@@ -265,9 +267,9 @@ public class TestArchitecture {
 		arch.getREG0().read();
 
 		//the bus must contains the number 20
-		assertEquals(20, arch.getExtbus1().get());
+		assertEquals(0, arch.getExtbus1().get());
 		//the flags bits 0 and 1 must be 0
-		assertEquals(0, arch.getFlags().getBit(0));
+		assertEquals(1, arch.getFlags().getBit(0));
 		assertEquals(0, arch.getFlags().getBit(1));
 		//PC must be pointing to 23
 		arch.getPC().read();
@@ -322,7 +324,7 @@ public class TestArchitecture {
 	}
 
 	@Test
-	public void jmp(){
+	public void testjmp(){
 		Architecture arch = new Architecture();
 		arch.getExtbus1().put(50);
 		arch.getPC().store();      //PC aponta para posição 50
@@ -337,6 +339,70 @@ public class TestArchitecture {
 		arch.jmp();
 		arch.getPC().read();
 		assertEquals(105, arch.getExtbus1().get());
+	}
+
+	@Test
+	public void testjz(){
+		Architecture arch = new Architecture();
+
+		//storing the number 66 in PC
+		arch.getExtbus1().put(66);
+		arch.getPC().store();      
+
+		//storing the number 110 into the memory, in position 67, the position just after PC
+		arch.getExtbus1().put(67);
+		arch.getMemory().store();
+		arch.getExtbus1().put(110);
+		arch.getMemory().store();
+
+		//now we can perform the jz method. 
+
+		//CASE 1.
+		//Bit ZERO is equals to 1
+
+		arch.getFlags().setBit(0,1);
+
+		//So, we will move the the number 110 (stored in the 67th position in the memory) 
+		//into the PC
+
+		//testing if PC stores the number 66
+		arch.getPC().read();
+		assertEquals(66, arch.getExtbus1().get());	
+
+		// calling the jz function
+		arch.jz();
+
+		//the flag bit 0 must be 1
+		assertEquals(1, arch.getFlags().getBit(0));
+
+		//PC must be pointing to 110
+		arch.getPC().read();
+		assertEquals(110, arch.getExtbus1().get());
+
+		//CASE 2.
+		//Bit ZERO is equals to 0
+
+		arch.getFlags().setBit(0,0);
+
+		//PC must have the number 66 initially
+		arch.getExtbus1().put(66);
+		arch.getPC().store();      
+
+		//testing if PC stores the number 66
+		arch.getPC().read();
+		assertEquals(66, arch.getExtbus1().get());	
+
+		//Note that the memory was not changed. So, in position 67 we have the number 110
+		
+		//Once the ZERO bit is 0, we WILL NOT move the number 110 (stored in the 67th position in the memory)
+		//into the PC.
+		//The original PC position was 66. The parameter is in position 67. So, now PC must be pointing to 68
+
+		arch.jz();
+		//PC contains the number 68
+		arch.getPC().read();
+		assertEquals(68, arch.getExtbus1().get());
+
 	}
 	
 	@Test

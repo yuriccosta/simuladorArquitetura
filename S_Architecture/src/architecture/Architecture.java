@@ -859,7 +859,7 @@ public class Architecture {
 		ula.read(1);
 		PC.internalStore();//now PC points to the parameter address
 		PC.read();
-		memory.read();// now the parameter value (address of the jz) is in the external bus
+		memory.read();// now the parameter value (address of the jeq) is in the external bus
 		demux.setValue(extbus1.get());
 		registersInternalRead();
 		ula.internalStore(0);
@@ -869,6 +869,7 @@ public class Architecture {
 		PC.read();
 		memory.read();
 		demux.setValue(extbus1.get());
+		registersInternalRead();
 		ula.inc();
 		ula.read(1);
 		PC.internalStore();
