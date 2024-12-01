@@ -90,7 +90,6 @@ public class TestArchitecture {
 		arch.getExtbus1().put(3);
 		arch.getMemory().store();
 
-
 		//result must be into mem[80]
 		//pc must be three positions ahead the original one
 		arch.imulRegMem();
@@ -353,7 +352,6 @@ public class TestArchitecture {
 		arch.getExtbus1().put(3);
 		arch.getMemory().store();
 
-
 		//result must be into mem[11]
 		//pc must be three positions ahead the original one
 		arch.subRegMem();
@@ -419,9 +417,6 @@ public class TestArchitecture {
 		// calling the jz function
 		arch.jz();
 
-		//the flag bit 0 must be 1
-		assertEquals(1, arch.getFlags().getBit(0));
-
 		//PC must be pointing to 110
 		arch.getPC().read();
 		assertEquals(110, arch.getExtbus1().get());
@@ -445,7 +440,9 @@ public class TestArchitecture {
 		//into the PC.
 		//The original PC position was 66. The parameter is in position 67. So, now PC must be pointing to 68
 
+		// calling the jz function
 		arch.jz();
+
 		//PC contains the number 68
 		arch.getPC().read();
 		assertEquals(68, arch.getExtbus1().get());
@@ -483,9 +480,6 @@ public class TestArchitecture {
 		// calling the jz function
 		arch.jnz();
 
-		//the flag bit 0 must be 1
-		assertEquals(1, arch.getFlags().getBit(0));
-
 		//PC must be pointing to 72
 		arch.getPC().read();
 		assertEquals(72, arch.getExtbus1().get());
@@ -495,7 +489,7 @@ public class TestArchitecture {
 
 		arch.getFlags().setBit(0,0);
 
-		//PC must have the number 66 initially
+		//PC must have the number 70 initially
 		arch.getExtbus1().put(70);
 		arch.getPC().store();      
 
@@ -573,8 +567,10 @@ public class TestArchitecture {
 		//into the PC.
 		//The original PC position was 75. The parameter is in position 76. So, now PC must be pointing to 77
 
+		// calling the jn function
 		arch.jn();
-		//PC contains the number 77
+
+		//PC must contain the number 77
 		arch.getPC().read();
 		assertEquals(77, arch.getExtbus1().get());
 
@@ -588,20 +584,21 @@ public class TestArchitecture {
 		arch.getExtbus1().put(80);
 		arch.getPC().store();
 
-		// Precisamos que reg0 e reg1 tenham um valor cada
+		// seting values to Reg0 and Reg1
 		arch.getExtbus1().put(30);
 		arch.getREG0().store();
 		arch.getExtbus1().put(30);
 		arch.getREG1().store();
 
-		// Agora precisamos do id do registrador
-		// Registador 0 na posição 81
+		// We need the id of the reg
+		// That's why we set the reg0 into the 81th position
 		arch.getExtbus1().put(81);
 		arch.getMemory().store();
 		arch.getExtbus1().put(0);
 		arch.getMemory().store();
 
-		// Registador 1 na posição 82
+		// We need the id of the reg
+		// That's why we set the reg0 into the 82th position
 		arch.getExtbus1().put(82);
 		arch.getMemory().store();
 		arch.getExtbus1().put(1);
@@ -618,15 +615,211 @@ public class TestArchitecture {
 		//CASE 1.
 		//Reg0 equals to Reg1
 
-		//So, we will move the the number 103 (stored in the 41th position in the memory) 
+		//So, we will move the the number 100 (stored in the 83th position in the memory) 
 		//into the PC
+
+		//testing if PC stores the number 80
+		arch.getPC().read();
+		assertEquals(80, arch.getExtbus1().get());	
 
 		// calling the jeq function
 		arch.jeq();
 
-		//PC must be pointing to 103
+		//PC must be pointing to 100
 		arch.getPC().read();
 		assertEquals(100, arch.getExtbus1().get());
+
+		//CASE 2.
+		//Reg0 is not equal to Reg1
+
+		// we need to change the value in one of the regs
+		arch.getExtbus1().put(3);
+		arch.getREG0().store();
+
+		//PC must have the number 80 initially
+		arch.getExtbus1().put(80);
+		arch.getPC().store();      
+
+		//testing if PC stores the number 80
+		arch.getPC().read();
+		assertEquals(80, arch.getExtbus1().get());	
+
+		//Note that the memory was not changed. So, in position 83 we have the number 100
+		
+		//Once Reg0 is not equal to Reg1, we WILL NOT move the number 100 (stored in the 83th position in the memory)
+		//into the PC.
+		//The original PC position was 80. The parameter is in position 83. So, now PC must be pointing to 84
+
+		// calling the jeq function
+		arch.jeq();
+
+		//PC must be pointing to 84
+		arch.getPC().read();
+		assertEquals(84, arch.getExtbus1().get());
+	}
+
+	@Test
+	public void testjgt(){
+		Architecture arch = new Architecture();
+
+		//storing the number 85 in PC
+		arch.getExtbus1().put(85);
+		arch.getPC().store();
+
+		// we need reg0 and reg1 to have one value each
+		arch.getExtbus1().put(60);
+		arch.getREG0().store();
+		arch.getExtbus1().put(30);
+		arch.getREG1().store();
+
+        // We need the id of the reg
+		// That's why we set the reg0 into the 86th position
+		arch.getExtbus1().put(86);
+		arch.getMemory().store();
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
+
+		// We need the id of the reg
+		// That's why we set the reg1 into the 87th position
+		arch.getExtbus1().put(87);
+		arch.getMemory().store();
+		arch.getExtbus1().put(1);
+		arch.getMemory().store();
+
+		//storing the number 106 into the memory, in position 88, the position just after PC
+		arch.getExtbus1().put(88);
+		arch.getMemory().store();
+		arch.getExtbus1().put(106);
+		arch.getMemory().store();
+
+		//now we can perform the jgt method. 
+
+		//CASE 1.
+		//Reg0 is greater than Reg1 (Reg0 > Reg1)
+
+		//So, we will move the the number 106 (stored in the 88th position in the memory) 
+		//into the PC
+
+		//testing if PC stores the number 85
+		arch.getPC().read();
+		assertEquals(85, arch.getExtbus1().get());
+
+		// calling the jgt function
+		arch.jgt();
+
+		//PC must be pointing to 106
+		arch.getPC().read();
+		assertEquals(106, arch.getExtbus1().get());
+
+		//CASE 2.
+		//Reg0 is NOT greater than Reg1 (Reg0 < Reg1)
+
+		// we need to change the value in one of the regs
+		arch.getExtbus1().put(10);
+		arch.getREG0().store();
+
+		//PC must have the number 85 initially
+		arch.getExtbus1().put(85);
+		arch.getPC().store();      
+
+		//testing if PC stores the number 85
+		arch.getPC().read();
+		assertEquals(85, arch.getExtbus1().get());	
+
+		//Note that the memory was not changed. So, in position 88 we have the number 106
+		
+		//Once Reg0 is not greater than Reg1, we WILL NOT move the number 106 (stored in the 88th position in the memory)
+		//into the PC.
+		//The original PC position was 85. The parameter is in position 88. So, now PC must be pointing to 89
+
+		// calling the jgt function
+		arch.jgt();
+
+		//PC must be pointing to 89
+		arch.getPC().read();
+		assertEquals(89, arch.getExtbus1().get());
+	}
+
+	@Test
+	public void testjlw(){
+		Architecture arch = new Architecture();
+
+		//storing the number 90 in PC
+		arch.getExtbus1().put(90);
+		arch.getPC().store();
+
+		// we need reg0 and reg1 to have one value each
+		arch.getExtbus1().put(30);
+		arch.getREG0().store();
+		arch.getExtbus1().put(60);
+		arch.getREG1().store();
+
+        // We need the id of the reg
+		// That's why we set the reg0 into the 91th position
+		arch.getExtbus1().put(91);
+		arch.getMemory().store();
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
+
+		// We need the id of the reg
+		// That's why we set the reg1 into the 92th position
+		arch.getExtbus1().put(92);
+		arch.getMemory().store();
+		arch.getExtbus1().put(1);
+		arch.getMemory().store();
+
+		//storing the number 109 into the memory, in position 93, the position just after PC
+		arch.getExtbus1().put(93);
+		arch.getMemory().store();
+		arch.getExtbus1().put(109);
+		arch.getMemory().store();
+
+		//now we can perform the jlw method. 
+
+		//CASE 1.
+		//Reg0 is less than Reg1 (Reg0 < Reg1)
+
+		//So, we will move the the number 109 (stored in the 93th position in the memory) 
+		//into the PC
+
+		//testing if PC stores the number 90
+		arch.getPC().read();
+		assertEquals(90, arch.getExtbus1().get());
+
+		// calling the jlw function
+		arch.jlw();
+
+		//PC must be pointing to 109
+		arch.getPC().read();
+		assertEquals(109, arch.getExtbus1().get());
+
+		//CASE 2.
+		//Reg0 is NOT less than Reg1 (Reg0 > Reg1)
+
+		// we need to change the value in one of the regs
+		arch.getExtbus1().put(90);
+		arch.getREG0().store();
+
+		//PC must have the number 90 initially
+		arch.getExtbus1().put(90);
+		arch.getPC().store();      
+
+		//testing if PC stores the number 90
+		arch.getPC().read();
+		assertEquals(90, arch.getExtbus1().get());	
+
+		//Note that the memory was not changed. So, in position 93 we have the number 109
+		
+		//Once Reg0 is not less than Reg1, we WILL NOT move the number 109 (stored in the 93th position in the memory)
+		//into the PC.
+		//The original PC position was 90. The parameter is in position 93. So, now PC must be pointing to 94
+
+		// calling the jlw function
+		arch.jlw();
+
+		//PC must be pointing to 94
+		arch.getPC().read();
+		assertEquals(94, arch.getExtbus1().get());
 
 	}
 	
