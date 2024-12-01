@@ -244,8 +244,9 @@ public class Architecture {
 		ula.inc();
 		ula.read(1);
 		PC.internalStore(); //now PC points to the parameter address
-		IR.internalStore(); // Guardamos o PC no IR	
+		//IR.internalStore(); // Guardamos o PC no IR	
 		
+		memory.getDataList()[99] = IR.getData(); // Guardamos PC
 		// Gravar os valores dos registradores na memória
 		memory.getDataList()[100] = REG0.getData();
 		memory.getDataList()[101] = REG1.getData();
@@ -253,45 +254,71 @@ public class Architecture {
 		memory.getDataList()[103] = REG3.getData();
 
 
+		// Move RegA Reg0
 		// Agora colocamos moveRegAReg na memória, onde RegA é o que esta no parametro
 		memory.getDataList()[104] = 11; //move
 		// Pegamos o id do Registrador do parametro e colocamos na memória
 		PC.read();
 		memory.read();
 		memory.getDataList()[105] = extbus1.get(); //regA
-		// Agora colocamos o id do reg0 na memória
 		memory.getDataList()[106] = 0; //reg0
 
-
+		// MOVE 0 REG3
 		// Agora colocamos 0 no reg3
 		demux.setValue(3);
 		extbus1.put(0);
-		registersInternalStore();
+		registersStore();
+
+		// ADD REG0 REG3
 		// Agora o endereço do laço que começa no addRegReg
 		memory.getDataList()[107] = 0; //add
 		memory.getDataList()[108] = 0; //reg0
 		memory.getDataList()[109] = 3; //reg3
 
+	
 		//PC++
 		PC.internalRead();
 		ula.store(1);
 		ula.inc();
 		ula.read(1);
 		PC.internalStore(); //now PC points to the parameter address
-
+		
+		// MOVE 1 REG1
+		memory.getDataList()[110] = 12; //move
+		memory.getDataList()[111] = 1; //immediate
+		memory.getDataList()[112] = 1; //reg1
+		
+		// SUB REG2 REG1
 		// Agora colocamos o valor de Mem no reg2
 		PC.read();
 		memory.read();
-		memory.getDataList()[110] = extbus1.get(); // Guardando o endereço da memória
+		memory.getDataList()[98] = extbus1.get(); // Guardando o endereço da memória
 		demux.setValue(2);
 		memory.read();
-		registersInternalStore();
-
-
+		registersStore();
+		
+		System.out.println("REG1: " + REG1.getData());
+		System.out.println("REG2: " + REG2.getData());
 		// Fazemos o sub reg1 reg2, onde reg1 = 1
-		memory.getDataList()[111] = 3; //sub
-		memory.getDataList()[112] = 1; //reg1
-		memory.getDataList()[113] = 2; //reg2
+		memory.getDataList()[113] = 3; //sub
+		memory.getDataList()[114] = 2; //reg2
+		memory.getDataList()[115] = 1; //reg1
+
+		// MOVE REG1 REG2
+		memory.getDataList()[116] = 11; //move
+		memory.getDataList()[117] = 1; //reg1
+		memory.getDataList()[118] = 2; //reg2
+		
+
+
+		// Salvamos reg3 na memória através do moveRegMem
+		memory.getDataList()[119] = 10; //move
+		memory.getDataList()[120] = 3; //reg3
+		PC.read();
+		memory.read();
+		memory.read();
+		memory.getDataList()[121] = extbus1.get(); //mem
+		System.out.println("PC: " + PC.getData());
 
 
 		// Fazemos o JZ para próxima posição de PC
@@ -302,13 +329,14 @@ public class Architecture {
 		ula.read(1);
 		PC.internalStore(); //now PC points to the parameter address
 		PC.read();
-		memory.getDataList()[114] = 17; //jz
-		memory.getDataList()[115] = extbus1.get(); // Guardando o endereço da memória
+		memory.getDataList()[122] = 17; //jz
+		memory.getDataList()[123] = extbus1.get(); // Guardando o endereço da memória
 		
 		//Agora colocamos o jmp para o laço
-		memory.getDataList()[116] = 15; //jmp
-		memory.getDataList()[117] = 107; // laço
+		memory.getDataList()[124] = 15; //jmp
+		memory.getDataList()[125] = 107; // laço
 
+		/* 
 		// Retornamos o PC que estava no IR
 		IR.internalRead();
 		PC.internalStore();
@@ -323,10 +351,10 @@ public class Architecture {
 		ula.store(1);
 		ula.inc();
 		ula.read(1);
-		PC.internalStore(); //now PC points to the parameter address
-
-
-
+		PC.internalStore(); //now PC points to the parameter address */
+		extbus1.put(104);
+		PC.store();
+		System.out.println("PC: " + PC.getData());
 	}
 
 	/**

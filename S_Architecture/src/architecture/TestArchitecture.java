@@ -90,10 +90,29 @@ public class TestArchitecture {
 		arch.getExtbus1().put(3);
 		arch.getMemory().store();
 
+		// Vamos colocar um jmp pro final do programa na posição 43
+		// Para o controlUnitExec não se perder
+		arch.getExtbus1().put(43);
+		arch.getMemory().store();
+		arch.getExtbus1().put(15);
+		arch.getMemory().store();
+
+		arch.getExtbus1().put(44);
+		arch.getMemory().store();
+		arch.getExtbus1().put(126);
+		arch.getMemory().store();
+		
+		arch.getExtbus1().put(126);
+		arch.getMemory().store();
+		arch.getExtbus1().put(-1);
+		arch.getMemory().store();
+
 
 		//result must be into mem[80]
 		//pc must be three positions ahead the original one
 		arch.imulRegMem();
+		arch.controlUnitEexec();
+		
 		arch.getExtbus1().put(80);
 		arch.getMemory().read();
 		
