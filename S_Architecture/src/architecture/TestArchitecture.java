@@ -61,6 +61,53 @@ public class TestArchitecture {
 	}
 
 	@Test
+	public void testImulRegMem() {
+		Architecture arch = new Architecture();
+		//in this test, PC will point to 40
+		arch.getExtbus1().put(40);
+		arch.getPC().store();      //PC points to position 40
+		
+		// Precisamos que reg0 tenha um valor
+		arch.getExtbus1().put(4);
+		arch.getREG0().store();
+
+		// Agora precisamos que logo após o comando add tenhamos o id do registrador
+		// Registador 0 na posição 41
+		arch.getExtbus1().put(41);
+		arch.getMemory().store();
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
+		
+		//Agora precisamos que tenha um endereço na memória logo após o que guardava o id do registrador
+		arch.getExtbus1().put(42);
+		arch.getMemory().store();
+		arch.getExtbus1().put(80);
+		arch.getMemory().store();
+
+		// Precisamos de um valor em mem[80]
+		arch.getExtbus1().put(80);
+		arch.getMemory().store();
+		arch.getExtbus1().put(3);
+		arch.getMemory().store();
+
+
+		//result must be into mem[80]
+		//pc must be three positions ahead the original one
+		arch.imulRegMem();
+		arch.getExtbus1().put(80);
+		arch.getMemory().read();
+		
+		//the bus must contains the number 20
+		assertEquals(12, arch.getExtbus1().get());
+		//the flags bits 0 and 1 must be 0
+		assertEquals(0, arch.getFlags().getBit(0));
+		assertEquals(0, arch.getFlags().getBit(1));
+		//PC must be pointing to 13
+		arch.getPC().read();
+		assertEquals(43, arch.getExtbus1().get());
+	}
+
+	@Test
 	public void testAddRegReg() {
 		Architecture arch = new Architecture();
 		//in this test, PC will point to 10

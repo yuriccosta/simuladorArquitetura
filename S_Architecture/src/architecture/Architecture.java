@@ -235,6 +235,101 @@ public class Architecture {
 	}
 
 	/**
+	 * This method implements imulRegMem microprogram
+	 */
+	public void imulRegMem() {
+		//PC++
+		PC.internalRead();
+		ula.store(1);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore(); //now PC points to the parameter address
+		IR.internalStore(); // Guardamos o PC no IR	
+		
+		// Gravar os valores dos registradores na memória
+		memory.getDataList()[100] = REG0.getData();
+		memory.getDataList()[101] = REG1.getData();
+		memory.getDataList()[102] = REG2.getData();
+		memory.getDataList()[103] = REG3.getData();
+
+
+		// Agora colocamos moveRegAReg na memória, onde RegA é o que esta no parametro
+		memory.getDataList()[104] = 11; //move
+		// Pegamos o id do Registrador do parametro e colocamos na memória
+		PC.read();
+		memory.read();
+		memory.getDataList()[105] = extbus1.get(); //regA
+		// Agora colocamos o id do reg0 na memória
+		memory.getDataList()[106] = 0; //reg0
+
+
+		// Agora colocamos 0 no reg3
+		demux.setValue(3);
+		extbus1.put(0);
+		registersInternalStore();
+		// Agora o endereço do laço que começa no addRegReg
+		memory.getDataList()[107] = 0; //add
+		memory.getDataList()[108] = 0; //reg0
+		memory.getDataList()[109] = 3; //reg3
+
+		//PC++
+		PC.internalRead();
+		ula.store(1);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore(); //now PC points to the parameter address
+
+		// Agora colocamos o valor de Mem no reg2
+		PC.read();
+		memory.read();
+		memory.getDataList()[110] = extbus1.get(); // Guardando o endereço da memória
+		demux.setValue(2);
+		memory.read();
+		registersInternalStore();
+
+
+		// Fazemos o sub reg1 reg2, onde reg1 = 1
+		memory.getDataList()[111] = 3; //sub
+		memory.getDataList()[112] = 1; //reg1
+		memory.getDataList()[113] = 2; //reg2
+
+
+		// Fazemos o JZ para próxima posição de PC
+		//PC++
+		PC.internalRead();
+		ula.store(1);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore(); //now PC points to the parameter address
+		PC.read();
+		memory.getDataList()[114] = 17; //jz
+		memory.getDataList()[115] = extbus1.get(); // Guardando o endereço da memória
+		
+		//Agora colocamos o jmp para o laço
+		memory.getDataList()[116] = 15; //jmp
+		memory.getDataList()[117] = 107; // laço
+
+		// Retornamos o PC que estava no IR
+		IR.internalRead();
+		PC.internalStore();
+		// Atualizamos PC para a próxima instrução
+		PC.internalRead();
+		ula.store(1);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore(); //now PC points to the parameter address
+		
+		PC.internalRead();
+		ula.store(1);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore(); //now PC points to the parameter address
+
+
+
+	}
+
+	/**
 	 * This method implements the microprogram for
 	 * 					ADD address
 	 * In the machine language this command number is 0, and the address is in the position next to him
