@@ -81,11 +81,11 @@ public class TestArchitecture {
 		//Agora precisamos que tenha um endereço na memória logo após o que guardava o id do registrador
 		arch.getExtbus1().put(42);
 		arch.getMemory().store();
-		arch.getExtbus1().put(80);
+		arch.getExtbus1().put(70);
 		arch.getMemory().store();
 
 		// Precisamos de um valor em mem[80]
-		arch.getExtbus1().put(80);
+		arch.getExtbus1().put(70);
 		arch.getMemory().store();
 		arch.getExtbus1().put(3);
 		arch.getMemory().store();
@@ -108,12 +108,12 @@ public class TestArchitecture {
 		arch.getMemory().store();
 
 
-		//result must be into mem[80]
+		//result must be into mem[70]
 		//pc must be three positions ahead the original one
 		arch.imulRegMem();
 		arch.controlUnitEexec();
 		
-		arch.getExtbus1().put(80);
+		arch.getExtbus1().put(70);
 		arch.getMemory().read();
 		
 		//the bus must contains the number 20
@@ -138,7 +138,7 @@ public class TestArchitecture {
 		arch.getREG0().store();
 		arch.getExtbus1().put(5);
 		arch.getREG1().store();
-
+		
 		// Agora precisamos que logo após o comando add tenhamos os ids dos registradores
 		// Registrador 0 na posição 11
 		arch.getExtbus1().put(11);
