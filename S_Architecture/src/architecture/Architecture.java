@@ -331,6 +331,7 @@ public class Architecture {
 		ula.read(1);
 		PC.internalStore(); //now PC points to the parameter address
 		PC.read();
+
 		memory.getDataList()[102] = 17; //jz
 		memory.getDataList()[103] = extbus1.get(); // Guardando o endereço da memória
 		
