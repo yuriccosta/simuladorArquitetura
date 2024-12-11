@@ -233,6 +233,151 @@ public class Architecture {
 			Flags.setBit(1,1);
 		}
 	}
+	
+	/**
+	 * This method implements imulMemReg microprogram
+	 */
+	public void imulMemReg() {
+		//PC++
+		PC.internalRead();
+		ula.store(1);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore(); //now PC points to the parameter address
+		//IR.internalStore(); // Guardamos o PC no IR	
+		
+		memory.getDataList()[79] = IR.getData(); // Guardamos PC
+		// Gravar os valores dos registradores na memória
+		memory.getDataList()[80] = REG0.getData();
+		memory.getDataList()[81] = REG1.getData();
+		memory.getDataList()[82] = REG2.getData();
+		memory.getDataList()[83] = REG3.getData();
+
+
+		// Move Mem Reg0
+		// Agora colocamos moveMemReg na memória, onde Mem é o que esta no parametro
+		memory.getDataList()[84] = 9; //move
+		// Pegamos o id do Registrador do parametro e colocamos na memória
+		PC.read();
+		memory.read();
+		memory.getDataList()[85] = extbus1.get(); //Mem
+		memory.getDataList()[86] = 0; //reg0
+
+		// Agora colocamos 0 no reg3
+		demux.setValue(3);
+		extbus1.put(0);
+		registersStore();
+
+
+		// ADD REG0 REG3
+		// Agora o endereço do laço que começa no addRegReg
+		memory.getDataList()[87] = 0; //add
+		memory.getDataList()[88] = 0; //reg0
+		memory.getDataList()[89] = 3; //reg3
+
+	
+		
+		// MOVE 1 REG1
+		memory.getDataList()[90] = 12; //move
+		memory.getDataList()[91] = 1; //immediate
+		memory.getDataList()[92] = 1; //reg1
+		
+		//PC++
+		PC.internalRead();
+		ula.store(1);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore(); //now PC points to the parameter address
+	
+		
+		// Agora colocamos o valor de RegA no Reg2
+		extbus1.put(78);
+		memory.store();
+		PC.read();
+		memory.store();
+		memory.read();
+		
+		// Fazemos MoveRegReg, RegA Reg2
+		memory.getDataList()[93] = 11; //move
+		memory.getDataList()[94] = extbus1.get(); //regA
+		memory.getDataList()[95] = 2; //reg2
+
+
+		
+		// SUB REG2 REG1
+		System.out.println("REG1: " + REG1.getData());
+		System.out.println("REG2: " + REG2.getData());
+		// Fazemos o sub reg1 reg2, onde reg1 = 1
+		memory.getDataList()[93] = 3; //sub
+		memory.getDataList()[94] = 2; //reg2
+		memory.getDataList()[95] = 1; //reg1
+
+		// MOVE REG1 REG2
+		memory.getDataList()[96] = 11; //move
+		memory.getDataList()[97] = 1; //reg1
+		memory.getDataList()[98] = 2; //reg2
+		
+
+
+		// Salvamos reg3 na memória através do moveRegMem
+		memory.getDataList()[99] = 10; //move
+		memory.getDataList()[100] = 3; //reg3
+		PC.read();
+		memory.read();
+		memory.read();
+		memory.getDataList()[101] = extbus1.get(); //mem
+		System.out.println("PC: " + PC.getData());
+
+
+		
+
+		memory.getDataList()[102] = 17; //jz
+		memory.getDataList()[103] = 106; // Guardando o endereço da memória
+		
+		//Agora colocamos o jmp para o laço
+		memory.getDataList()[104] = 15; //jmp
+		memory.getDataList()[105] = 87; // laço
+
+		
+		// Guarda resultado da multiplicação na memória
+		memory.getDataList()[106] = 10;  //move
+		memory.getDataList()[107] = 3; //reg3
+		memory.getDataList()[108] = memory.getDataList()[78]; //mem
+
+		// Recuperando os dados dos registradores
+		memory.getDataList()[109] = 9; //move
+		memory.getDataList()[110] = 80; //mem
+		memory.getDataList()[111] = 0; //reg0
+
+		memory.getDataList()[112] = 9; //move
+		memory.getDataList()[113] = 81; //mem
+		memory.getDataList()[114] = 1; //reg1
+
+		memory.getDataList()[115] = 9; //move
+		memory.getDataList()[116] = 82; //mem
+		memory.getDataList()[117] = 2; //reg2
+
+		memory.getDataList()[118] = 9; //move
+		memory.getDataList()[119] = 83; //mem
+		memory.getDataList()[120] = 3; //reg3
+
+
+
+		//PC++
+		PC.internalRead();
+		ula.store(1);
+		ula.inc();
+		ula.read(1);
+		PC.internalStore(); //now PC points to the parameter address
+		PC.read();
+		
+		memory.getDataList()[121] = 15; //jmp
+		memory.getDataList()[122] = extbus1.get(); // Para a próxima instrução
+
+
+		extbus1.put(84);
+		PC.store();
+	}
 
 	/**
 	 * This method implements imulRegMem microprogram
@@ -301,7 +446,7 @@ public class Architecture {
 		
 		System.out.println("REG1: " + REG1.getData());
 		System.out.println("REG2: " + REG2.getData());
-		// Fazemos o sub reg1 reg2, onde reg1 = 1
+		// Fazemos o sub reg2 reg1, onde reg1 = 1
 		memory.getDataList()[93] = 3; //sub
 		memory.getDataList()[94] = 2; //reg2
 		memory.getDataList()[95] = 1; //reg1
@@ -323,7 +468,40 @@ public class Architecture {
 		System.out.println("PC: " + PC.getData());
 
 
-		// Fazemos o JZ para próxima posição de PC
+		
+
+		memory.getDataList()[102] = 17; //jz
+		memory.getDataList()[103] = 106; // Guardando o endereço da memória
+		
+		//Agora colocamos o jmp para o laço
+		memory.getDataList()[104] = 15; //jmp
+		memory.getDataList()[105] = 87; // laço
+
+		
+		// Guarda resultado da multiplicação na memória
+		memory.getDataList()[106] = 10;  //move
+		memory.getDataList()[107] = 3; //reg3
+		memory.getDataList()[108] = memory.getDataList()[78]; //mem
+
+		// Recuperando os dados dos registradores
+		memory.getDataList()[109] = 9; //move
+		memory.getDataList()[110] = 80; //mem
+		memory.getDataList()[111] = 0; //reg0
+
+		memory.getDataList()[112] = 9; //move
+		memory.getDataList()[113] = 81; //mem
+		memory.getDataList()[114] = 1; //reg1
+
+		memory.getDataList()[115] = 9; //move
+		memory.getDataList()[116] = 82; //mem
+		memory.getDataList()[117] = 2; //reg2
+
+		memory.getDataList()[118] = 9; //move
+		memory.getDataList()[119] = 83; //mem
+		memory.getDataList()[120] = 3; //reg3
+
+
+
 		//PC++
 		PC.internalRead();
 		ula.store(1);
@@ -331,17 +509,17 @@ public class Architecture {
 		ula.read(1);
 		PC.internalStore(); //now PC points to the parameter address
 		PC.read();
-
-		memory.getDataList()[102] = 17; //jz
-		memory.getDataList()[103] = extbus1.get(); // Guardando o endereço da memória
 		
-		//Agora colocamos o jmp para o laço
-		memory.getDataList()[104] = 15; //jmp
-		memory.getDataList()[105] = 87; // laço
+		memory.getDataList()[121] = 15; //jmp
+		memory.getDataList()[122] = extbus1.get(); // Para a próxima instrução
+
 
 		extbus1.put(84);
 		PC.store();
 	}
+
+
+
 
 	/**
 	 * This method implements the microprogram for
