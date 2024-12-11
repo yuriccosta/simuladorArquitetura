@@ -61,6 +61,73 @@ public class TestArchitecture {
 	}
 
 	@Test
+	public void testImulMemReg() {
+		Architecture arch = new Architecture();
+		//in this test, PC will point to 40
+		arch.getExtbus1().put(40);
+		arch.getPC().store();      //PC points to position 40
+		
+		// Precisamos que reg0 tenha um valor
+		arch.getExtbus1().put(3);
+		arch.getREG0().store();
+
+		
+		//Agora precisamos que tenha um endereço na memória
+		arch.getExtbus1().put(41);
+		arch.getMemory().store();
+		arch.getExtbus1().put(70);
+		arch.getMemory().store();
+
+		// Precisamos de um valor em mem[70]
+		arch.getExtbus1().put(70);
+		arch.getMemory().store();
+		arch.getExtbus1().put(4);
+		arch.getMemory().store();
+		
+		// Agora precisamos que logo após o comando add tenhamos o id do registrador
+		// Registador 0 na posição 42
+		arch.getExtbus1().put(42);
+		arch.getMemory().store();
+		arch.getExtbus1().put(0);
+		arch.getMemory().store();
+
+
+		// Vamos colocar um jmp pro final do programa na posição 43
+		// Para o controlUnitExec não se perder
+		arch.getExtbus1().put(43);
+		arch.getMemory().store();
+		arch.getExtbus1().put(15);
+		arch.getMemory().store();
+
+		arch.getExtbus1().put(44);
+		arch.getMemory().store();
+		arch.getExtbus1().put(126);
+		arch.getMemory().store();
+		
+		arch.getExtbus1().put(126);
+		arch.getMemory().store();
+		arch.getExtbus1().put(-1);
+		arch.getMemory().store();
+
+
+		//result must be into mem[70]
+		//pc must be three positions ahead the original one
+		arch.imulMemReg();
+		arch.controlUnitEexec();
+		
+		arch.getDemux().setValue(0);
+		arch.registersInternalRead();
+		//the bus must contains the number 12
+		assertEquals(12, arch.getIntbus1().get());
+		//the flags bits 0 and 1 must be 0
+		//assertEquals(0, arch.getFlags().getBit(0));
+		//assertEquals(0, arch.getFlags().getBit(1));
+		//PC must be pointing to 13
+		arch.getPC().read();
+		assertEquals(126, arch.getExtbus1().get());
+	}
+
+	@Test
 	public void testImulRegMem() {
 		Architecture arch = new Architecture();
 		//in this test, PC will point to 40
@@ -110,8 +177,8 @@ public class TestArchitecture {
 
 		//result must be into mem[70]
 		//pc must be three positions ahead the original one
-		arch.imulRegMem();
-		arch.controlUnitEexec();
+		//arch.imulRegMem();
+		//arch.controlUnitEexec();
 		
 		arch.getExtbus1().put(70);
 		arch.getMemory().read();

@@ -290,20 +290,21 @@ public class Architecture {
 		PC.internalStore(); //now PC points to the parameter address
 	
 		
-		// Agora colocamos o valor de RegA no Reg2
-		extbus1.put(78);
-		memory.store();
+		// Agora colocamos o pc do regA na posição 78
 		PC.read();
-		memory.store();
 		memory.read();
+		memory.getDataList()[78] = extbus1.get();
+		System.out.println("Extbus1:");
 		
 		// Fazemos MoveRegReg, RegA Reg2
-		memory.getDataList()[93] = 11; //move
+		demux.setValue(2);
+		registersStore();
+		/* memory.getDataList()[93] = 11; //move
 		memory.getDataList()[94] = extbus1.get(); //regA
-		memory.getDataList()[95] = 2; //reg2
-
+		memory.getDataList()[95] = 2; //reg2 */
 
 		
+
 		// SUB REG2 REG1
 		System.out.println("REG1: " + REG1.getData());
 		System.out.println("REG2: " + REG2.getData());
@@ -318,50 +319,56 @@ public class Architecture {
 		memory.getDataList()[98] = 2; //reg2
 		
 
-
+/* 
 		// Salvamos reg3 na memória através do moveRegMem
-		memory.getDataList()[99] = 10; //move
-		memory.getDataList()[100] = 3; //reg3
+		memory.getDataList()[102] = 10; //move
+		memory.getDataList()[103] = 3; //reg3
 		PC.read();
 		memory.read();
 		memory.read();
-		memory.getDataList()[101] = extbus1.get(); //mem
-		System.out.println("PC: " + PC.getData());
+		memory.getDataList()[104] = extbus1.get(); //mem
+		System.out.println("PC: " + PC.getData()); 
+		*/
 
 
-		
-
-		memory.getDataList()[102] = 17; //jz
-		memory.getDataList()[103] = 106; // Guardando o endereço da memória
+	
+		memory.getDataList()[99] = 17; //jz
+		memory.getDataList()[100] = 106; // Guardando o endereço da memória
 		
 		//Agora colocamos o jmp para o laço
-		memory.getDataList()[104] = 15; //jmp
-		memory.getDataList()[105] = 87; // laço
+		memory.getDataList()[101] = 15; //jmp
+		memory.getDataList()[102] = 87; // laço
 
 		
 		// Guarda resultado da multiplicação na memória
-		memory.getDataList()[106] = 10;  //move
-		memory.getDataList()[107] = 3; //reg3
-		memory.getDataList()[108] = memory.getDataList()[78]; //mem
+		memory.getDataList()[103] = 10;  //move
+		memory.getDataList()[104] = 3; //reg3
+		extbus1.put(77);
+		memory.getDataList()[105] = extbus1.get(); //mem
 
 		// Recuperando os dados dos registradores
+		memory.getDataList()[106] = 9; //move
+		memory.getDataList()[107] = 80; //mem
+		memory.getDataList()[108] = 0; //reg0
+
 		memory.getDataList()[109] = 9; //move
-		memory.getDataList()[110] = 80; //mem
-		memory.getDataList()[111] = 0; //reg0
+		memory.getDataList()[110] = 81; //mem
+		memory.getDataList()[111] = 1; //reg1
 
 		memory.getDataList()[112] = 9; //move
-		memory.getDataList()[113] = 81; //mem
-		memory.getDataList()[114] = 1; //reg1
+		memory.getDataList()[113] = 82; //mem
+		memory.getDataList()[114] = 2; //reg2
 
 		memory.getDataList()[115] = 9; //move
-		memory.getDataList()[116] = 82; //mem
-		memory.getDataList()[117] = 2; //reg2
+		memory.getDataList()[116] = 83; //mem
+		memory.getDataList()[117] = 3; //reg3
 
-		memory.getDataList()[118] = 9; //move
-		memory.getDataList()[119] = 83; //mem
-		memory.getDataList()[120] = 3; //reg3
-
-
+		// Recupera resultado da multiplicação da memória
+		memory.getDataList()[118] = 9;  //move
+		memory.getDataList()[119] = 77; //mem
+		extbus1.put(78);
+		memory.read();
+		memory.getDataList()[120] = extbus1.get(); //regA
 
 		//PC++
 		PC.internalRead();
@@ -374,11 +381,13 @@ public class Architecture {
 		memory.getDataList()[121] = 15; //jmp
 		memory.getDataList()[122] = extbus1.get(); // Para a próxima instrução
 
-
 		extbus1.put(84);
 		PC.store();
 	}
 
+
+
+	
 	/**
 	 * This method implements imulRegMem microprogram
 	 */
@@ -457,7 +466,7 @@ public class Architecture {
 		memory.getDataList()[98] = 2; //reg2
 		
 
-
+/*  Revisar*/
 		// Salvamos reg3 na memória através do moveRegMem
 		memory.getDataList()[99] = 10; //move
 		memory.getDataList()[100] = 3; //reg3
@@ -467,7 +476,7 @@ public class Architecture {
 		memory.getDataList()[101] = extbus1.get(); //mem
 		System.out.println("PC: " + PC.getData());
 
-
+ /**/
 		
 
 		memory.getDataList()[102] = 17; //jz
@@ -1862,9 +1871,15 @@ public class Architecture {
 	 */
 	public void controlUnitEexec() {
 		halt = false;
+		int c = 0;
 		while (!halt) {
+			if (c > 512){
+				break;
+				//this is a security measure to avoid infinite loops
+			} 
 			fetch();
 			decodeExecute();
+			c++;
 		}
 
 	}
