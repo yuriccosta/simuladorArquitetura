@@ -26,6 +26,20 @@ public class testAssembler {
 				8		inc    		(rpg0++)
 				9       move        %regA %regB (regA <- regB)
 		 */
+
+		 	/*
+		 *  we must to test if the assembler generates correct sequence lines
+		 *  of object program for all of these commands
+				Code	Command		arg
+				0		add 		addr (rpg0 <- rpg0 + addr)
+				1		sub 		addr (rpg0 <- rpg0 - addr)
+				2		jmp 		addr (pc <- addr)
+				3		jz 			addr  (se bitZero pc <- addr)
+				4		jn 			addr  (se bitneg pc <- addr)
+				5		inc    		(rpg0++)
+				6       move        %regA %regB (regA <- regB)
+		 */
+
 		Assembler ass = new Assembler();
 		String commandLine[] = new String[3];
 		ArrayList<String> returnedObj = new ArrayList<>();
@@ -33,22 +47,26 @@ public class testAssembler {
 		//first test: add
 		commandLine[0] = "add";
 		commandLine[1] = "variable";
+		commandLine[2] = "%RPG0";
 		ass.proccessCommand(commandLine);
 		returnedObj = ass.getObjProgram();
-		assertEquals("0", returnedObj.get(0)); //the add code is 0
+		assertEquals("1", returnedObj.get(0)); //the add code is 0
 		assertEquals("&variable", ass.getObjProgram().get(1));
-		assertEquals(2, ass.getObjProgram().size()); //only two lines: the command and the address
+		assertEquals("%RPG0", ass.getObjProgram().get(2));
+		assertEquals(3, ass.getObjProgram().size()); //only two lines: the command and the address
 		
 		//second test: sub
 		returnedObj = new ArrayList<>();
 		ass = new Assembler();
 		commandLine[0] = "sub";
-		commandLine[1] = "variable";
+		commandLine[1] = "%RPG0";
+		commandLine[2] = "%RPG1";
 		ass.proccessCommand(commandLine);
 		returnedObj = ass.getObjProgram();
-		assertEquals("1", returnedObj.get(0)); //the add code is 0
-		assertEquals("&variable", ass.getObjProgram().get(1));
-		assertEquals(2, ass.getObjProgram().size()); //only two lines: the command and the address
+		assertEquals("3", returnedObj.get(0)); //the add code is 0
+		assertEquals("%RPG0", ass.getObjProgram().get(1));
+		assertEquals("%RPG1", ass.getObjProgram().get(2));
+		assertEquals(3, ass.getObjProgram().size()); //only two lines: the command and the address
 		
 		//third test: jmp
 		returnedObj = new ArrayList<>();
@@ -57,7 +75,7 @@ public class testAssembler {
 		commandLine[1] = "label";
 		ass.proccessCommand(commandLine);
 		returnedObj = ass.getObjProgram();
-		assertEquals("2", returnedObj.get(0)); //the add code is 0
+		assertEquals("15", returnedObj.get(0)); //the add code is 0
 		assertEquals("&label", ass.getObjProgram().get(1));
 		assertEquals(2, ass.getObjProgram().size()); //only two lines: the command and the address
 		
@@ -68,7 +86,7 @@ public class testAssembler {
 		commandLine[1] = "label";
 		ass.proccessCommand(commandLine);
 		returnedObj = ass.getObjProgram();
-		assertEquals("3", returnedObj.get(0)); //the add code is 0
+		assertEquals("17", returnedObj.get(0)); //the add code is 0
 		assertEquals("&label", ass.getObjProgram().get(1));
 		assertEquals(2, ass.getObjProgram().size()); //only two lines: the command and the address
 		
@@ -79,10 +97,11 @@ public class testAssembler {
 		commandLine[1] = "label";
 		ass.proccessCommand(commandLine);
 		returnedObj = ass.getObjProgram();
-		assertEquals("4", returnedObj.get(0)); //the add code is 0
+		assertEquals("16", returnedObj.get(0)); //the add code is 0
 		assertEquals("&label", ass.getObjProgram().get(1));
 		assertEquals(2, ass.getObjProgram().size()); //only two lines: the command and the address
 		
+		/* 
 		//sixth test: read
 		returnedObj = new ArrayList<>();
 		ass = new Assembler();
@@ -93,6 +112,7 @@ public class testAssembler {
 		assertEquals("5", returnedObj.get(0)); //the add code is 0
 		assertEquals("&address", ass.getObjProgram().get(1));
 		assertEquals(2, ass.getObjProgram().size()); //only two lines: the command and the address
+		
 		
 		//seventh test: store
 		returnedObj = new ArrayList<>();
@@ -116,6 +136,8 @@ public class testAssembler {
 		assertEquals("40", ass.getObjProgram().get(1));
 		assertEquals(2, ass.getObjProgram().size()); //only two lines: the command and the immediate
 		
+		*/
+
 		//nineth test: inc
 		returnedObj = new ArrayList<>();
 		ass = new Assembler();
@@ -123,8 +145,11 @@ public class testAssembler {
 		commandLine[1] = "address";
 		ass.proccessCommand(commandLine);
 		returnedObj = ass.getObjProgram();
-		assertEquals("8", returnedObj.get(0)); //the add code is 0
-		assertEquals(1, ass.getObjProgram().size()); //only one lines: the command and no parameters
+		assertEquals("14", returnedObj.get(0)); //the add code is 0
+		assertEquals("&address", ass.getObjProgram().get(1));
+		assertEquals(2, ass.getObjProgram().size()); //only one lines: the command and no parameters
+
+		
 		
 		//tenth test: move %regA %regB
 		returnedObj = new ArrayList<>();
@@ -134,7 +159,7 @@ public class testAssembler {
 		commandLine[2] = "%RPG1";
 		ass.proccessCommand(commandLine);
 		returnedObj = ass.getObjProgram();
-		assertEquals("9", returnedObj.get(0)); //the move %regA %regB code is 9
+		assertEquals("11", returnedObj.get(0)); //the move %regA %regB code is 9
 		assertEquals("%RPG0", ass.getObjProgram().get(1));
 		assertEquals("%RPG1", ass.getObjProgram().get(2));
 		assertEquals(3, ass.getObjProgram().size()); //only two lines: the command and the address
@@ -150,59 +175,64 @@ public class testAssembler {
 		//move %RPG0 %RPG1
 		//read adr3
 		//let's start!!!
+
+		//final test: a small program
+		//testing the following lines
+		//sub adr1
+		//add adr2
+		//jmp label1
+		//inc
+		//jn label2
+		//move %RPG0 %RPG1
+		//let's start!!!
+
 		returnedObj = new ArrayList<>();
 		ass = new Assembler();
 		commandLine[0] = "sub";
-		commandLine[1] = "adr1";
+		commandLine[1] = "%RPG0";
+		commandLine[2] = "%RPG1";
 		ass.proccessCommand(commandLine);
 		commandLine[0] = "add";
-		commandLine[1] = "adr2";
+		commandLine[1] = "variable";
+		commandLine[2] = "%RPG1";
 		ass.proccessCommand(commandLine);
 		commandLine[0] = "jmp";
 		commandLine[1] = "label1";
 		ass.proccessCommand(commandLine);
 		commandLine[0] = "inc";
+		commandLine[1] = "address";
 		ass.proccessCommand(commandLine);
 		commandLine[0] = "jn";
 		commandLine[1] = "label2";
-		ass.proccessCommand(commandLine);
-		commandLine[0] = "ldi";
-		commandLine[1] = "86";
 		ass.proccessCommand(commandLine);
 		commandLine[0] = "move";
 		commandLine[1] = "%RPG0";
 		commandLine[2] = "%RPG1";
 		ass.proccessCommand(commandLine);
-		commandLine[0] = "read";
-		commandLine[1] = "adr3";
-		ass.proccessCommand(commandLine);
 		//now, getting the object program
 		returnedObj = ass.getObjProgram();
-		assertEquals(16, returnedObj.size()); //the object program must have 16 lines
+		assertEquals(15, returnedObj.size()); //the object program must have 16 lines
 		
-		assertEquals("1", returnedObj.get(0)); //the code of sub is 1
-		assertEquals("&adr1", returnedObj.get(1)); //the parameter
+		assertEquals("3", returnedObj.get(0)); //the code of sub is 1
+		assertEquals("%RPG0", returnedObj.get(1)); //the parameter
+		assertEquals("%RPG1", returnedObj.get(2)); //the parameter
 		
-		assertEquals("0", returnedObj.get(2)); //the code of add is 0
-		assertEquals("&adr2", returnedObj.get(3)); //the parameter
+		assertEquals("1", returnedObj.get(3)); //the code of add is 0
+		assertEquals("&variable", returnedObj.get(4)); //the parameter
+		assertEquals("%RPG1", returnedObj.get(5)); //the parameter
 		
-		assertEquals("2", returnedObj.get(4)); //the code of jmp is 2
-		assertEquals("&label1", returnedObj.get(5)); //the parameter
+		assertEquals("15", returnedObj.get(6)); //the code of jmp is 2
+		assertEquals("&label1", returnedObj.get(7)); //the parameter
 		
-		assertEquals("8", returnedObj.get(6)); //the code of inc is 8
+		assertEquals("14", returnedObj.get(8)); //the code of inc is 8
+		assertEquals("&address", returnedObj.get(9)); //the parameter
 		
-		assertEquals("4", returnedObj.get(7)); //the code of jn is 4
-		assertEquals("&label2", returnedObj.get(8)); //the parameter
+		assertEquals("16", returnedObj.get(10)); //the code of jn is 4
+		assertEquals("&label2", returnedObj.get(11)); //the paramete
 		
-		assertEquals("7", returnedObj.get(9)); //the code of ldi is 7
-		assertEquals("86", returnedObj.get(10)); //the parameter
-		
-		assertEquals("9", returnedObj.get(11)); //the code of moveRegReg is 9
-		assertEquals("%RPG0", returnedObj.get(12)); //the parameter
-		assertEquals("%RPG1", returnedObj.get(13)); //the parameter
-		
-		assertEquals("5", returnedObj.get(14)); //the code of read is 5
-		assertEquals("&adr3", returnedObj.get(15)); //the parameter
+		assertEquals("11", returnedObj.get(12)); //the code of moveRegReg is 9
+		assertEquals("%RPG0", returnedObj.get(13)); //the parameter
+		assertEquals("%RPG1", returnedObj.get(14)); //the parameter
 	}
 
 	@Test
@@ -229,7 +259,7 @@ public class testAssembler {
 		 * move %RPG1 %RPG0
 		 * sub var3
 		 * jn label
-		 */
+		 
 		sourceProgram.add("var1");
 		sourceProgram.add("var2");
 		sourceProgram.add("var3");
@@ -246,6 +276,43 @@ public class testAssembler {
 		sourceProgram.add("move %RPG1 %RPG0");
 		sourceProgram.add("sub var3");
 		sourceProgram.add("jn label");
+		*/
+
+				//inserting the following program
+		/*
+		 * var1
+		 * var2
+		 * var3
+		 * move imme 10
+		 * move reg mem var3
+		 * move imme 2
+		 * move reg mem var2
+		 * move imme 0
+		 * move reg mem var1
+		 * label:
+		 * move mem reg var1
+		 * add var2
+		 * move reg mem var1
+		 * move %RPG1 %RPG0
+		 * sub var3
+		 * jn label
+		 */
+		sourceProgram.add("var1");
+		sourceProgram.add("var2");
+		sourceProgram.add("var3");
+		sourceProgram.add("move 10 %RPG0");
+		sourceProgram.add("move %RPG0 var3");
+		sourceProgram.add("move 2 %RPG0");
+		sourceProgram.add("move %RPG0 var2");
+		sourceProgram.add("move 0 %RPG0");
+		sourceProgram.add("move %RPG0 var1");
+		sourceProgram.add("label:");
+		sourceProgram.add("move var1 %RPG0");
+		sourceProgram.add("add var2 %RPG0");
+		sourceProgram.add("move %RPG0 var1");
+		sourceProgram.add("move %RPG1 %RPG0");
+		sourceProgram.add("sub var3 %RPG0");
+		sourceProgram.add("jn label");
 		
 		//now we can generate the object program
 		ass.setLines(sourceProgram);
@@ -253,45 +320,55 @@ public class testAssembler {
 		returnedObj = ass.getObjProgram();
 		
 		//testing
-		assertEquals(25, returnedObj.size());
+		assertEquals(35, returnedObj.size());
 		
 		//checking line by line
-		assertEquals("7", returnedObj.get(0)); //the code of ldi is 7
+		assertEquals("12", returnedObj.get(0)); //the code of ldi is 7
 		assertEquals("10", returnedObj.get(1)); //the parameter
+		assertEquals("%RPG0", returnedObj.get(2)); //the parameter
 		
-		assertEquals("6", returnedObj.get(2)); //the code of store is 6
-		assertEquals("&var3", returnedObj.get(3)); //the parameter
+		assertEquals("10", returnedObj.get(3)); //the code of store is 6
+		assertEquals("%RPG0", returnedObj.get(4)); //the parameter
+		assertEquals("&var3", returnedObj.get(5)); //the parameter
 		
-		assertEquals("7", returnedObj.get(4)); //the code of ldi is 7
-		assertEquals("2", returnedObj.get(5)); //the parameter
+		assertEquals("12", returnedObj.get(6)); //the code of ldi is 7
+		assertEquals("2", returnedObj.get(7)); //the parameter
+		assertEquals("%RPG0", returnedObj.get(8)); //the parameter
 		
-		assertEquals("6", returnedObj.get(6)); //the code of store is 6
-		assertEquals("&var2", returnedObj.get(7)); //the parameter
+		assertEquals("10", returnedObj.get(9)); //the code of store is 6
+		assertEquals("%RPG0", returnedObj.get(10)); //the parameter
+		assertEquals("&var2", returnedObj.get(11)); //the parameter
 		
-		assertEquals("7", returnedObj.get(8)); //the code of ldi is 7
-		assertEquals("0", returnedObj.get(9)); //the parameter
+		assertEquals("12", returnedObj.get(12)); //the code of ldi is 7
+		assertEquals("0", returnedObj.get(13)); //the parameter
+		assertEquals("%RPG0", returnedObj.get(14)); //the parameter
 		
-		assertEquals("6", returnedObj.get(10)); //the code of store is 6
-		assertEquals("&var1", returnedObj.get(11)); //the parameter
-		
-		assertEquals("5", returnedObj.get(12)); //the code of read is 5
-		assertEquals("&var1", returnedObj.get(13)); //the parameter
-		
-		assertEquals("0", returnedObj.get(14)); //the code of add is 0
-		assertEquals("&var2", returnedObj.get(15)); //the parameter
-		
-		assertEquals("6", returnedObj.get(16)); //the code of store is 6
+		assertEquals("10", returnedObj.get(15)); //the code of store is 6
+		assertEquals("%RPG0", returnedObj.get(16)); //the parameter
 		assertEquals("&var1", returnedObj.get(17)); //the parameter
 		
-		assertEquals("9", returnedObj.get(18)); //the code of moveRegReg is 9
-		assertEquals("%RPG1", returnedObj.get(19)); //the parameter
+		assertEquals("9", returnedObj.get(18)); //the code of read is 5
+		assertEquals("&var1", returnedObj.get(19)); //the parameter
 		assertEquals("%RPG0", returnedObj.get(20)); //the parameter
 		
-		assertEquals("1", returnedObj.get(21)); //the code of sub is 1
-		assertEquals("&var3", returnedObj.get(22)); //the parameter
+		assertEquals("1", returnedObj.get(21)); //the code of add is 0
+		assertEquals("&var2", returnedObj.get(22)); //the parameter
+		assertEquals("%RPG0", returnedObj.get(23)); //the parameter
 		
-		assertEquals("4", returnedObj.get(23)); //the code of jn is 4
-		assertEquals("&label", returnedObj.get(24)); //the parameter
+		assertEquals("10", returnedObj.get(24)); //the code of store is 6
+		assertEquals("%RPG0", returnedObj.get(25)); //the parameter
+		assertEquals("&var1", returnedObj.get(26)); //the parameter
+		
+		assertEquals("11", returnedObj.get(27)); //the code of moveRegReg is 9
+		assertEquals("%RPG1", returnedObj.get(28)); //the parameter
+		assertEquals("%RPG0", returnedObj.get(29)); //the parameter
+		
+		assertEquals("4", returnedObj.get(30)); //the code of sub is 1
+		assertEquals("&var3", returnedObj.get(31)); //the parameter
+		assertEquals("%RPG0", returnedObj.get(32)); //the parameter
+		
+		assertEquals("16", returnedObj.get(33)); //the code of jn is 4
+		assertEquals("&label", returnedObj.get(34)); //the parameter
 		
 		//now, checking if the label "label" was inserted, pointing to the position 12
 		//the line 'read var1' is just after the label
@@ -301,7 +378,7 @@ public class testAssembler {
 		assertEquals(1, ass.getLabels().size());
 		assertEquals(1, ass.getLabelsAddresses().size());
 		assertEquals(0, ass.getLabels().indexOf("label"));
-		assertEquals(12, (int) ass.getLabelsAddresses().get(0));
+		assertEquals(18, (int) ass.getLabelsAddresses().get(0));
 		
 		//checking if all variables are stored in variables collection
 		assertEquals("var1", ass.getVariables().get(0));
@@ -445,16 +522,16 @@ public class testAssembler {
 		//so, var1 must be replaced by 127, var2 by 126 and var3 by 125
 		ass.replaceAllVariables();
 		//var1 (now 127) is in lines 5, 7 and 14
-		assertEquals("127", ass.getExecProgram().get(1));
-		assertEquals("127", ass.getExecProgram().get(7));
-		assertEquals("127", ass.getExecProgram().get(14));
+		assertEquals("135", ass.getExecProgram().get(1));
+		assertEquals("135", ass.getExecProgram().get(7));
+		assertEquals("135", ass.getExecProgram().get(14));
 		
 		//var2 (now 126) is in line 5
-		assertEquals("126", ass.getExecProgram().get(5));
+		assertEquals("134", ass.getExecProgram().get(5));
 		
 		//var3 (now 125) is in lines 10 and 12
-		assertEquals("125", ass.getExecProgram().get(10));
-		assertEquals("125", ass.getExecProgram().get(12));
+		assertEquals("133", ass.getExecProgram().get(10));
+		assertEquals("133", ass.getExecProgram().get(12));
 	}
 	
 	@Test
@@ -469,7 +546,7 @@ public class testAssembler {
 		sampleexec.add("9");
 		sampleexec.add("9");
 		sampleexec.add("%PC"); //pc is in position 4
-		sampleexec.add("9");
+		sampleexec.add("6");
 		sampleexec.add("%RPG0"); //rpg0 is in position 6
 		sampleexec.add("9");
 		sampleexec.add("9");

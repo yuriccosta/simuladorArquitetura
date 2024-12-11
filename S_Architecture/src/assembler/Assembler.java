@@ -1,20 +1,14 @@
 package assembler;
 
+import architecture.Architecture;
+import components.Register;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-
-//import org.hamcrest.core.IsNull;
-
-import components.Register;
-
-import architecture.Architecture;
 
 public class Assembler {
 	
@@ -297,23 +291,23 @@ public class Assembler {
 		String p2 = tokens[2];
 		int p=-1;
 		System.out.println(p1 + p2);
-		if ( (p1.startsWith("%")) && (p2.startsWith("%")) ) { //this is a moveRegReg comand
+
+		if ( (p1.startsWith("%")) && (p2.startsWith("%")) ) { // Comando subRegReg
 			p = commands.indexOf("moveRegReg");
 		}
 
-		if( (p1.startsWith("%")) && (p2.matches("[A-Za-z]+")) ) {
+		else if( (p1.startsWith("%")) ) {
 			p = commands.indexOf("moveRegMem");
 		}
 
-		if( (p1.matches("[A-Za-z]+")) && (p2.startsWith("%")) ) {
-			p = commands.indexOf("moveMemReg");
-			System.out.println("men reg: " + p);
-		}
-		// Verificar esse.
-		if( (p1.matches("[-]*[0-9]+")) && (p2.startsWith("%")) ) {
+		else if( (p1.matches("[-]*[0-9]+")) && (p2.startsWith("%")) ) { // não temos
 			p = commands.indexOf("moveImmReg");
 		}
+		else if( (p2.startsWith("%")) ) {
+			p = commands.indexOf("moveMemReg");
+		}
 		return p;
+
 	}
 
 	private int proccessAdd( String[] tokens ) {
@@ -322,22 +316,22 @@ public class Assembler {
 		String p2 = tokens[2];
 		int p=-1;
 		
-		if ( (p1.startsWith("%")) && (p2.startsWith("%")) ) { // Comando add
+		if ( (p1.startsWith("%")) && (p2.startsWith("%")) ) { // Comando subRegReg
 			p = commands.indexOf("addRegReg");
 		}
 
-		if( (p1.matches("[A-Za-z]+")) && (p2.startsWith("%")) ) {
-			p = commands.indexOf("addMemReg");
-		}
-
-		if( (p1.startsWith("%")) && (p2.matches("[A-Za-z]+")) ) {
+		else if( (p1.startsWith("%")) ) {
 			p = commands.indexOf("addRegMem");
 		}
-		if( (p1.matches("[-]*[0-9]+")) && (p2.startsWith("%")) ) {
+
+		else if( (p1.matches("[-]*[0-9]+")) && (p2.startsWith("%")) ) { // não temos
 			p = commands.indexOf("addImmReg");
 		}
-
+		else if( (p2.startsWith("%")) ) {
+			p = commands.indexOf("addMemReg");
+		}
 		return p;
+
 	}
 
 	private int proccessSub( String[] tokens ) {
@@ -350,15 +344,15 @@ public class Assembler {
 			p = commands.indexOf("subRegReg");
 		}
 
-		if( (p1.startsWith("%")) && (p2.matches("[A-Za-z]+")) ) {
+		else if( (p1.startsWith("%")) ) {
 			p = commands.indexOf("subRegMem");
 		}
 
-		if( (p1.matches("[A-Za-z]+")) && (p2.startsWith("%")) ) {
-			p = commands.indexOf("subMemReg");
-		}
-		if( (p1.matches("[-]*[0-9]+")) && (p2.startsWith("%")) ) {
+		else if( (p1.matches("[-]*[0-9]+")) && (p2.startsWith("%")) ) { // não temos
 			p = commands.indexOf("subImmReg");
+		}
+		else if( (p2.startsWith("%")) ) {
+			p = commands.indexOf("subMemReg");
 		}
 		return p;
 
